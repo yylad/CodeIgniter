@@ -241,14 +241,16 @@ if (defined('ENVIRONMENT'))
 		define ('VIEWPATH', APPPATH.'views/' );
 	}
 
-/*
- * Load the aprks so we know where to put them
+/**
+ * Load the sparks so we know where to put them
+ * @TODO This should probably go in core/CodeIgniter.php
  */
-if (count($argv) > 1 && $argv[1] === '-s') {
-    $ci_argv = array_slice($argv, 1);;
+if (php_sapi_name() == 'cli' && count($argv) > 1 && $argv[1] == '-s') 
+{
+    $ci_argv = array_slice($argv, 1);
     $ci_argc = $argc - 1;
-    require_once BASEPATH . '/spark/spark_source.php';
-    require_once BASEPATH . '/spark/spark_cli.php';
+    require BASEPATH . '/spark/spark_source.php';
+    require BASEPATH . '/spark/spark_cli.php';
     // define a source
     $sources = array();
     if ($fh = @fopen(BASEPATH . '/spark/sources', 'r'))
@@ -262,8 +264,8 @@ if (count($argv) > 1 && $argv[1] === '-s') {
     }
     if (count($sources) == 0)
     {
-        $default_source = 'sparks.oconf.org';
-        Spark_utils::warning("No sources found, using $default_source");
+        $default_source = 'getsparks.org';
+        Spark_utils::warning("No spark sources found. Using $default_source as a default.");
         $sources[] = new Spark_source($default_source);
     }
     // take commands
@@ -273,7 +275,8 @@ if (count($argv) > 1 && $argv[1] === '-s') {
     $cli->execute($cmd, $args);
 }
 
-else {
+else 
+{
     /*
      * --------------------------------------------------------------------
      * LOAD THE BOOTSTRAP FILE
