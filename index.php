@@ -108,7 +108,7 @@ if (defined('ENVIRONMENT'))
  * NO TRAILING SLASH!
  */
 	$view_folder = '';
-    
+
 /*
  *---------------------------------------------------------------
  * SPARKS FOLDER NAME
@@ -255,7 +255,7 @@ if (defined('ENVIRONMENT'))
 
 		define ('VIEWPATH', APPPATH.'views/' );
 	}
-    
+
 	// The path to the "sparks" folder
 	if (is_dir($sparks_folder))
 	{
@@ -271,13 +271,13 @@ if (defined('ENVIRONMENT'))
 
 		define ('SPARKPATH', APPPATH.'sparks/' );
 	}
-    
+
 
 /**
  * Load the sparks so we know where to put them
  * @TODO This should probably go in core/CodeIgniter.php
  */
-if (php_sapi_name() == 'cli' && count($argv) > 1 && $argv[1] == '-s') 
+if (php_sapi_name() == 'cli' && count($argv) > 1 && $argv[1] == '-s')
 {
     $ci_argv = array_slice($argv, 1);
     $ci_argc = $argc - 1;
@@ -294,14 +294,14 @@ if (php_sapi_name() == 'cli' && count($argv) > 1 && $argv[1] == '-s')
         }
         fclose($fh);
     }
-    
+
     if (count($sources) == 0)
     {
         $default_source = 'getsparks.org';
         Spark_utils::warning("No spark sources found. Using $default_source as a default.");
         $sources[] = new Spark_source($default_source);
     }
-    
+
     // take commands
     $cli = new Spark_CLI($sources);
     $cmd = $ci_argc > 1 ? $ci_argv[1] : null;
@@ -309,7 +309,7 @@ if (php_sapi_name() == 'cli' && count($argv) > 1 && $argv[1] == '-s')
     $cli->execute($cmd, $args);
 }
 
-else 
+else
 {
     /*
      * --------------------------------------------------------------------
