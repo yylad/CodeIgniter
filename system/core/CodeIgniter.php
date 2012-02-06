@@ -173,12 +173,15 @@ if (php_sapi_name() == 'cli' && count($argv) > 1 && $argv[1] == '-s')
     require BASEPATH . '/spark/spark_source.php';
     require BASEPATH . '/spark/spark_cli.php';
     // define a source
-    $sources = $CFG->item('sources') ? $CFG->item('sources') : array();
-    if (count($sources) == 0)
+    $source_uris = $CFG->item('sources') ? $CFG->item('sources') : array();
+    $sources = array();
+    foreach ($source_uris as $source_uri)
     {
-        $default_source = 'getsparks.org';
-        Spark_utils::warning("No spark sources found. Using $default_source as a default.");
-        $sources[] = new Spark_source($default_source);
+        $sources[] = new Spark_source($source_uri);
+    }
+    if (empty($sources))
+    {
+        Spark_utils::warning('No sources provided');
     }
     // take commands
     $cli = new Spark_CLI($sources);

@@ -193,6 +193,7 @@ class Spark_CLI {
         $version = array_key_exists('v', $flags) ? $flags['v'] : 'HEAD';
 
         // retrieve the spark details
+        $spark = null;
         foreach ($this->spark_sources as $source)
         {
             Spark_utils::notice("Retrieving spark detail from " . $source->get_url());

@@ -395,6 +395,17 @@ $config['rewrite_short_tags'] = FALSE;
 */
 $config['proxy_ips'] = '';
 
+/*
+|--------------------------------------------------------------------------
+| Spark Sources
+|--------------------------------------------------------------------------
+|
+| Where to look for sparks.  Add your own custom sources here so supplement
+| the getsparks.org repository
+|
+*/
+$config['sources'] = array('getsparks.org');
+
 
 /* End of file config.php */
 /* Location: ./application/config/config.php */
