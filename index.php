@@ -273,53 +273,14 @@ if (defined('ENVIRONMENT'))
 	}
 
 
-/**
- * Load the sparks so we know where to put them
- * @TODO This should probably go in core/CodeIgniter.php
+/*
+ * --------------------------------------------------------------------
+ * LOAD THE BOOTSTRAP FILE
+ * --------------------------------------------------------------------
+ *
+ * And away we go...
  */
-if (php_sapi_name() == 'cli' && count($argv) > 1 && $argv[1] == '-s')
-{
-    $ci_argv = array_slice($argv, 1);
-    $ci_argc = $argc - 1;
-    require BASEPATH . '/spark/spark_source.php';
-    require BASEPATH . '/spark/spark_cli.php';
-    // define a source
-    $sources = array();
-    if ($fh = @fopen(APPPATH . 'config/sources', 'r'))
-    {
-        while ($line = fgets($fh))
-        {
-            $line = trim($line);
-            if ($line && $line[0] != '#') $sources[] = new Spark_source($line);
-        }
-        fclose($fh);
-    }
-
-    if (count($sources) == 0)
-    {
-        $default_source = 'getsparks.org';
-        Spark_utils::warning("No spark sources found. Using $default_source as a default.");
-        $sources[] = new Spark_source($default_source);
-    }
-
-    // take commands
-    $cli = new Spark_CLI($sources);
-    $cmd = $ci_argc > 1 ? $ci_argv[1] : null;
-    $args = $ci_argc > 2 ? array_slice($ci_argv, 2) : array();
-    $cli->execute($cmd, $args);
-}
-
-else
-{
-    /*
-     * --------------------------------------------------------------------
-     * LOAD THE BOOTSTRAP FILE
-     * --------------------------------------------------------------------
-     *
-     * And away we go...
-     */
-    require_once BASEPATH.'core/CodeIgniter.php';
-}
+require_once BASEPATH.'core/CodeIgniter.php';
 
 /* End of file index.php */
 /* Location: ./index.php */
