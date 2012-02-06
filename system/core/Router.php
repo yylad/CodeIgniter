@@ -318,6 +318,8 @@ class CI_Router {
 
 			}
 
+            print_r($segments); exit;
+
 			return $segments;
 		}
 

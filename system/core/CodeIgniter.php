@@ -182,6 +182,8 @@
 		$RTR->_set_overrides($routing);
 	}
 
+
+    exit('what');
 /*
  * ------------------------------------------------------
  *  Instantiate the output class
