@@ -71,11 +71,11 @@ $autoload['packages'] = array();
 | -------------------------------------------------------------------
 | Prototype:
 |
-|  $autoload['packages'] = array(APPPATH.'third_party', '/usr/local/shared');
+|  $autoload['sparks'] = array('curl/1.2.1', 'DataMapper-ORM/1.8.2');
 |
 */
-$autoload['sparks'] = array('curl/1.2.1');
 
+$autoload['sparks'] = array();
 
 /*
 | -------------------------------------------------------------------
