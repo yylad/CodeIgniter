@@ -5,7 +5,6 @@ require_once dirname(__FILE__) . '/spark_exception.php';
 require_once dirname(__FILE__) . '/spark_source.php';
 
 define('SPARK_VERSION', '0.0.7');
-! defined('SPARKPATH') AND define('SPARKPATH', APPPATH . 'sparks');
 
 class Spark_CLI {
 
@@ -86,10 +85,10 @@ class Spark_CLI {
         if (!is_dir(SPARKPATH)) return; // no directory yet
         foreach(scandir(SPARKPATH) as $item)
         {
-            if (!is_dir(SPARKPATH . "/$item") || $item[0] == '.') continue;
-            foreach (scandir(SPARKPATH . "/$item") as $ver)
+            if (!is_dir(SPARKPATH . "$item") || $item[0] == '.') continue;
+            foreach (scandir(SPARKPATH . "$item") as $ver)
             {
-                if (!is_dir(SPARKPATH . "/$item/$ver") || $ver[0] == '.') continue;
+                if (!is_dir(SPARKPATH . "$item/$ver") || $ver[0] == '.') continue;
                 Spark_utils::line("$item ($ver)");
             }
         }
@@ -177,7 +176,7 @@ class Spark_CLI {
             Spark_utils::warning('Looks like that spark isn\'t installed');
         }
         // attempt to clean up - will not remove unless empty
-        @rmdir(SPARKPATH . "/$spark_name");
+        @rmdir(SPARKPATH . "$spark_name");
     }
 
     private function install($args)
