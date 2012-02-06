@@ -43,8 +43,8 @@ class Spark_type {
             }
         }
 
-        @mkdir(SPARK_PATH); // Two steps for windows
-        @mkdir(SPARK_PATH . "/$this->name");
+        @mkdir(SPARKPATH); // Two steps for windows
+        @mkdir(SPARKPATH . "$this->name");
         Spark_utils::full_move($this->temp_path, $this->installation_path);
         Spark_utils::remove_full_directory($this->temp_path);
         $this->installed_path = $this->installation_path;
@@ -120,7 +120,7 @@ class Spark_type {
             Spark_utils::warning('You can keep using it, or look for an alternate');
         }
         // tell the user if its already installed and throw an error
-        $this->installation_path = SPARK_PATH . "/$this->name/$this->version";
+        $this->installation_path = SPARKPATH . "$this->name/$this->version";
         if (is_dir($this->installation_path))
         {
             if ($break_on_already_installed)
