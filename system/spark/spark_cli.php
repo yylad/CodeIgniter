@@ -5,7 +5,7 @@ require_once dirname(__FILE__) . '/spark_exception.php';
 require_once dirname(__FILE__) . '/spark_source.php';
 
 define('SPARK_VERSION', '0.0.7');
-! defined('SPARK_PATH') AND define('SPARK_PATH', APPPATH . 'sparks');
+! defined('SPARKPATH') AND define('SPARKPATH', APPPATH . 'sparks');
 
 class Spark_CLI {
 
@@ -83,13 +83,13 @@ class Spark_CLI {
     // list the installed sparks
     private function lister()
     {
-        if (!is_dir(SPARK_PATH)) return; // no directory yet
-        foreach(scandir(SPARK_PATH) as $item)
+        if (!is_dir(SPARKPATH)) return; // no directory yet
+        foreach(scandir(SPARKPATH) as $item)
         {
-            if (!is_dir(SPARK_PATH . "/$item") || $item[0] == '.') continue;
-            foreach (scandir(SPARK_PATH . "/$item") as $ver)
+            if (!is_dir(SPARKPATH . "/$item") || $item[0] == '.') continue;
+            foreach (scandir(SPARKPATH . "/$item") as $ver)
             {
-                if (!is_dir(SPARK_PATH . "/$item/$ver") || $ver[0] == '.') continue;
+                if (!is_dir(SPARKPATH . "/$item/$ver") || $ver[0] == '.') continue;
                 Spark_utils::line("$item ($ver)");
             }
         }
@@ -156,7 +156,7 @@ class Spark_CLI {
         $version = array_key_exists('v', $flags) ? $flags['v'] : null;
 
         // figure out what to remove and make sure its isntalled
-        $dir_to_remove = SPARK_PATH . ($version == null ? "/$spark_name" : "/$spark_name/$version");
+        $dir_to_remove = SPARKPATH . ($version == null ? "/$spark_name" : "/$spark_name/$version");
         if (!file_exists($dir_to_remove))
         {
             return Spark_utils::warning('Looks like that spark isn\'t installed');
@@ -177,7 +177,7 @@ class Spark_CLI {
             Spark_utils::warning('Looks like that spark isn\'t installed');
         }
         // attempt to clean up - will not remove unless empty
-        @rmdir(SPARK_PATH . "/$spark_name");
+        @rmdir(SPARKPATH . "/$spark_name");
     }
 
     private function install($args)
