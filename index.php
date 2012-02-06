@@ -247,11 +247,11 @@ if (defined('ENVIRONMENT'))
 if (count($argv) > 1 && $argv[1] === '-s') {
     $ci_argv = array_slice($argv, 1);;
     $ci_argc = $argc - 1;
-    require_once BASEPATH . '/spark/spark_source.php';
-    require_once BASEPATH . '/spark/spark_cli.php';
+    require_once BASEPATH . 'spark/spark_source.php';
+    require_once BASEPATH . 'spark/spark_cli.php';
     // define a source
     $sources = array();
-    if ($fh = @fopen(BASEPATH . '/spark/sources', 'r'))
+    if ($fh = @fopen(APPPATH . 'config/sources', 'r'))
     {
         while ($line = fgets($fh))
         {
