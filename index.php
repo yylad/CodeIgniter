@@ -272,7 +272,6 @@ if (defined('ENVIRONMENT'))
 		define ('SPARKPATH', APPPATH.'sparks/' );
 	}
     
-    
 
 /**
  * Load the sparks so we know where to put them
