@@ -25,6 +25,7 @@ General Topics
 	Caching <caching>
 	profiling
 	cli
+  sparks
 	managing_apps
 	environments
 	alternative_php

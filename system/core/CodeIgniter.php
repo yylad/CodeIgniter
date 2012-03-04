@@ -163,6 +163,39 @@
 
 /*
  * ------------------------------------------------------
+ *  If this is a sparks CLI call, send it to sparks
+ * ------------------------------------------------------
+ */
+if (php_sapi_name() == 'cli' && count($argv) > 1)
+{
+    if ($argv[1] == '-s' || $argv[1] == '--spark')
+    {
+        $ci_argv = array_slice($argv, 1);
+        $ci_argc = $argc - 1;
+        require BASEPATH . '/spark/spark_source.php';
+        require BASEPATH . '/spark/spark_cli.php';
+        // define a source
+        $source_uris = $CFG->item('sources') ? $CFG->item('sources') : array();
+        $sources = array();
+        foreach ($source_uris as $source_uri)
+        {
+            $sources[] = new Spark_source($source_uri);
+        }
+        if (empty($sources))
+        {
+            Spark_utils::warning('No sources provided');
+        }
+        // take commands
+        $cli = new Spark_CLI($sources);
+        $cmd = $ci_argc > 1 ? $ci_argv[1] : null;
+        $args = $ci_argc > 2 ? array_slice($ci_argv, 2) : array();
+        $cli->execute($cmd, $args);
+        exit;
+    }
+}
+
+/*
+ * ------------------------------------------------------
  *  Instantiate the URI class
  * ------------------------------------------------------
  */

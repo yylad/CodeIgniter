@@ -109,6 +109,21 @@ if (defined('ENVIRONMENT'))
  */
 	$view_folder = '';
 
+/*
+ *---------------------------------------------------------------
+ * SPARKS FOLDER NAME
+ *---------------------------------------------------------------
+ *
+ * If you want to move the sparks folder out of the application
+ * folder set the path to the folder here. The folder can be renamed
+ * and relocated anywhere on your server. If blank, it will default
+ * to the standard location inside your application folder. If you
+ * do move this, use the full server path to this folder.
+ *
+ * NO TRAILING SLASH!
+ */
+    $sparks_folder = '';
+
 
 /*
  * --------------------------------------------------------------------
@@ -240,6 +255,23 @@ if (defined('ENVIRONMENT'))
 
 		define ('VIEWPATH', APPPATH.'views/' );
 	}
+
+	// The path to the "sparks" folder
+	if (is_dir($sparks_folder))
+	{
+		define ('SPARKPATH', $sparks_folder .'/');
+	}
+	else
+	{
+		if ( ! is_dir(APPPATH.'sparks/'))
+		{
+			header('HTTP/1.1 503 Service Unavailable.', TRUE, '503');
+			exit('Your spark folder path does not appear to be set correctly. Please open the following file and correct this: '.SELF);
+		}
+
+		define ('SPARKPATH', APPPATH.'sparks/' );
+	}
+
 
 /*
  * --------------------------------------------------------------------

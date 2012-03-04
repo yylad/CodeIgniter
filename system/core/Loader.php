@@ -107,6 +107,13 @@ class CI_Loader {
 	 * @var array
 	 */
 	protected $_ci_helpers			= array();
+    /**
+     * List of loaded sparks
+     * 
+     * @var array
+     */
+    var $_ci_loaded_sparks = array();
+
 	/**
 	 * List of class name mappings
 	 *
@@ -307,6 +314,73 @@ class CI_Loader {
 		// couldn't find the model
 		show_error('Unable to locate the model you have specified: '.$model);
 	}
+    
+    /**
+     * Load a spark by it's path within the sparks directory defined by
+     *  SPARKPATH, such as 'markdown/1.0'
+     * @param string $spark The spark path withint he sparks directory
+     * @param <type> $autoload An optional array of items to autoload
+     *  in the format of:
+     *   array (
+     *     'helper' => array('somehelper')
+     *   )
+     * @return void
+     */
+    function spark($spark, $autoload = array())
+    {
+        if(is_array($spark))
+        {
+            foreach($spark as $s)
+            {
+                $this->spark($s);
+            }
+        }
+
+        $spark = ltrim($spark, '/');
+        $spark = rtrim($spark, '/');
+
+        $spark_path = SPARKPATH . $spark . '/';
+        $parts      = explode('/', $spark);
+        $spark_slug = strtolower($parts[0]);
+
+        # If we've already loaded this spark, bail
+        if(array_key_exists($spark_slug, $this->_ci_loaded_sparks))
+        {
+            return true;
+        }
+
+        # Check that it exists. CI Doesn't check package existence by itself
+        if(!file_exists($spark_path))
+        {
+            show_error("Cannot find spark path at $spark_path");
+        }
+
+        if(count($parts) == 2)
+        {
+            $this->_ci_loaded_sparks[$spark_slug] = $spark;
+        }
+
+        $this->add_package_path($spark_path);
+
+        foreach($autoload as $type => $read)
+        {
+            if($type == 'library')
+                $this->library($read);
+            elseif($type == 'model')
+                $this->model($read);
+            elseif($type == 'config')
+                $this->config($read);
+            elseif($type == 'helper')
+                $this->helper($read);
+            elseif($type == 'view')
+                $this->view($read);
+            else
+                show_error ("Could not autoload object of type '$type' ($read) for spark $spark");
+        }
+
+        // Looks for a spark's specific autoloader
+        $this->_ci_autoloader($spark_path);
+    }
 
 	// --------------------------------------------------------------------
 
@@ -1116,19 +1190,27 @@ class CI_Loader {
 	 * The config/autoload.php file contains an array that permits sub-systems,
 	 * libraries, and helpers to be loaded automatically.
 	 *
-	 * @param	array
+	 * @param	string Optional. The path of the package to be autoloaded.
+     *                 Default to the appplication path.
 	 * @return	void
 	 */
-	protected function _ci_autoloader()
+	protected function _ci_autoloader($package_path = NULL)
 	{
-		if (defined('ENVIRONMENT') AND file_exists(APPPATH.'config/'.ENVIRONMENT.'/autoload.php'))
-		{
-			include(APPPATH.'config/'.ENVIRONMENT.'/autoload.php');
-		}
-		else
-		{
-			include(APPPATH.'config/autoload.php');
-		}
+        $autoload_base = APPPATH;
+        
+        if($package_path !== NULL)
+        {
+            $autoload_base = rtrim($package_path, ',') . '/';
+        }
+        
+        if (defined('ENVIRONMENT') AND file_exists(APPPATH.'config/'.ENVIRONMENT.'/autoload.php'))
+        {
+            include($autoload_base.'config/'.ENVIRONMENT.'/autoload.php');
+        }
+        else
+        {
+            include($autoload_base.'config/autoload.php');
+        }
 
 		if ( ! isset($autoload))
 		{
@@ -1143,9 +1225,18 @@ class CI_Loader {
 				$this->add_package_path($package_path);
 			}
 		}
+        
+        // Autoload sparks
+		if (isset($autoload['sparks']))
+		{
+			foreach ($autoload['sparks'] as $spark)
+			{
+				$this->spark($spark);
+			}
+		}
 
 		// Load any custom config file
-		if (count($autoload['config']) > 0)
+		if (isset($autoload['config']) && count($autoload['config']) > 0)
 		{
 			$CI =& get_instance();
 			foreach ($autoload['config'] as $key => $val)
