@@ -3,10 +3,10 @@ Sparks
 ######
 
 Sparks are CodeIgniter's built-in packages. They are modular bits of code that
-can be dropped into your application, which typically provide added
+can be dropped into your application.  They typically provide some added
 functionality to your application.
 
-Sparks can be installed manually to your application, or automatically via
+Sparks can be installed manually, or automatically via
 a built-in command-line tool.
 
 Installing a Spark via the Command Line
