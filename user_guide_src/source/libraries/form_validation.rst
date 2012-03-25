@@ -523,7 +523,7 @@ Changing the Error Delimiters
 
 By default, the Form Validation class adds a paragraph tag (<p>) around
 each error message shown. You can either change these delimiters
-globally or individually.
+globally, individually, or change the defaults in a config file.
 
 #. **Changing delimiters Globally**
    To globally change the error delimiters, in your controller function,
@@ -542,6 +542,12 @@ globally or individually.
    Or::
 
       <?php echo validation_errors('<div class="error">', '</div>'); ?>
+
+#. **Set delimiters in a config file**
+   You can add your error delimiters in application/config/form_validation.php as follows::
+   
+      $config['error_prefix'] = '<div class="error_prefix">';
+      $config['error_suffix'] = '</div>';
 
 
 Showing Errors Individually
@@ -596,6 +602,9 @@ In this case, you can specify the array to be validated::
 
 Creating validation rules, running the validation and retrieving error messages works the same whether you are
 validating $_POST data or an array.
+
+**Important Note:** If you want to validate more than one array during a single execution, then you should	
+call the reset_validation() function before setting up rules and validating the new array.
 
 For more info please see the :ref:`function-reference` section below.
 
@@ -866,7 +875,7 @@ Rule                      Parameter  Description                                
                                      underscores or dashes.                                                                                               
 **numeric**               No         Returns FALSE if the form element contains anything other than numeric characters.                                   
 **integer**               No         Returns FALSE if the form element contains anything other than an integer.                                           
-**decimal**               Yes        Returns FALSE if the form element is not exactly the parameter value.                                                
+**decimal**               No         Returns FALSE if the form element contains anything other than a decimal number.                                     
 **is_natural**            No         Returns FALSE if the form element contains anything other than a natural number:
                                      0, 1, 2, 3, etc.
 **is_natural_no_zero**    No         Returns FALSE if the form element contains anything other than a natural
@@ -965,6 +974,14 @@ $this->form_validation->set_data();
 
 		Permits you to set an array for validation, instead of using the default
 		$_POST array.
+
+$this->form_validation->reset_validation();
+========================================
+
+ .. php:method:: reset_validation ()
+
+    Permits you to reset the validation when you validate more than one array.
+	This function should be called before validating each new array.
 
 $this->form_validation->error_array();
 ========================================
