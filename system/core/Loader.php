@@ -199,7 +199,7 @@ class CI_Loader {
 	 * @param	string	an optional object name
 	 * @return	void
 	 */
-	public function library($library = '', $params = NULL, $object_name = NULL)
+	public function library($library = '', $params = NULL, $rename_to = NULL)
 	{
 		if (is_array($library))
 		{
@@ -213,15 +213,10 @@ class CI_Loader {
 
 		if ($library == '' OR isset($this->_base_classes[$library]))
 		{
-			return FALSE;
+			return NULL;
 		}
 
-		if ( ! is_null($params) && ! is_array($params))
-		{
-			$params = NULL;
-		}
-
-		$this->_ci_load_class($library, $params, $object_name);
+		return $this->_ci_load_class($library, $params, $rename_to);
 	}
 
 	// --------------------------------------------------------------------
@@ -247,9 +242,9 @@ class CI_Loader {
 			return;
 		}
 
-		if ($model == '')
+		if (empty($model))
 		{
-			return;
+			return NULL;
 		}
 
 		$path = '';
@@ -275,6 +270,7 @@ class CI_Loader {
 		}
 
 		$CI =& get_instance();
+
 		if (isset($CI->$name))
 		{
 			show_error('The model name you are loading is the name of a resource that is already being used: '.$name);
@@ -628,7 +624,7 @@ class CI_Loader {
 	 * @param	string	an optional object name
 	 * @return	void
 	 */
-	public function driver($library = '', $params = NULL, $object_name = NULL)
+	public function driver($library = '', $params = NULL, $rename_to = NULL)
 	{
 		if (is_array($library))
 		{
@@ -657,7 +653,7 @@ class CI_Loader {
 			$library = ucfirst($library).'/'.$library;
 		}
 
-		return $this->library($library, $params, $object_name);
+		return $this->library($library, $params, $rename_to);
 	}
 
 	// --------------------------------------------------------------------
@@ -901,7 +897,7 @@ class CI_Loader {
 	 * @param	string	an optional object name
 	 * @return	void
 	 */
-	protected function _ci_load_class($class, $params = NULL, $object_name = NULL)
+	protected function _ci_load_class($class, $params = NULL, $rename_to = NULL)
 	{
 		// Get the class name, and while we're at it trim any slashes.
 		// The directory path can be included as part of the class name,
@@ -937,34 +933,17 @@ class CI_Loader {
 				}
 
 				// Safety: Was the class already loaded by a previous call?
-				if (in_array($subclass, $this->_ci_loaded_files))
+				if ( ! in_array($subclass, $this->_ci_loaded_files))
 				{
-					// Before we deem this to be a duplicate request, let's see
-					// if a custom object name is being supplied. If so, we'll
-					// return a new instance of the object
-					if ( ! is_null($object_name))
-					{
-						$CI =& get_instance();
-						if ( ! isset($CI->$object_name))
-						{
-							return $this->_ci_init_class($class, config_item('subclass_prefix'), $params, $object_name);
-						}
-					}
-
-					$is_duplicate = TRUE;
-					log_message('debug', $class.' class already loaded. Second attempt ignored.');
-					return;
+					include_once($baseclass);
+					include_once($subclass);
+					$this->_ci_loaded_files[] = $subclass;
 				}
 
-				include_once($baseclass);
-				include_once($subclass);
-				$this->_ci_loaded_files[] = $subclass;
-
-				return $this->_ci_init_class($class, config_item('subclass_prefix'), $params, $object_name);
+				return $this->_ci_init_class($class, config_item('subclass_prefix'), $params, $rename_to);
 			}
 
 			// Lets search for the requested library file and load it.
-			$is_duplicate = FALSE;
 			foreach ($this->_ci_library_paths as $path)
 			{
 				$filepath = $path.'libraries/'.$subdir.$class.'.php';
@@ -976,46 +955,27 @@ class CI_Loader {
 				}
 
 				// Safety: Was the class already loaded by a previous call?
-				if (in_array($filepath, $this->_ci_loaded_files))
+				if ( ! in_array($filepath, $this->_ci_loaded_files))
 				{
-					// Before we deem this to be a duplicate request, let's see
-					// if a custom object name is being supplied. If so, we'll
-					// return a new instance of the object
-					if ( ! is_null($object_name))
-					{
-						$CI =& get_instance();
-						if ( ! isset($CI->$object_name))
-						{
-							return $this->_ci_init_class($class, '', $params, $object_name);
-						}
-					}
-
-					$is_duplicate = TRUE;
-					log_message('debug', $class.' class already loaded. Second attempt ignored.');
-					return;
+					include $filepath;
+					$this->_ci_loaded_files[] = $filepath;
 				}
 
-				include_once($filepath);
-				$this->_ci_loaded_files[] = $filepath;
-				return $this->_ci_init_class($class, '', $params, $object_name);
+				return $this->_ci_init_class($class, '', $params, $rename_to);	
 			}
 
 		} // END FOREACH
 
 		// One last attempt. Maybe the library is in a subdirectory, but it wasn't specified?
-		if ($subdir == '')
+		if ($subdir === '')
 		{
 			$path = strtolower($class).'/'.$class;
 			return $this->_ci_load_class($path, $params);
 		}
 
 		// If we got this far we were unable to find the requested class.
-		// We do not issue errors if the load call failed due to a duplicate request
-		if ($is_duplicate == FALSE)
-		{
-			log_message('error', 'Unable to load the requested class: '.$class);
-			show_error('Unable to load the requested class: '.$class);
-		}
+		log_message('error', 'Unable to load the requested class: '.$class);
+		show_error('Unable to load the requested class: '.$class);
 	}
 
 	// --------------------------------------------------------------------
@@ -1029,7 +989,7 @@ class CI_Loader {
 	 * @param	string	an optional object name
 	 * @return	void
 	 */
-	protected function _ci_init_class($class, $prefix = '', $config = FALSE, $object_name = NULL)
+	protected function _ci_init_class($class, $prefix = '', $config = FALSE, $rename_to = NULL)
 	{
 		// Is there an associated config file for this class? Note: these should always be lowercase
 		if ($config === NULL)
@@ -1099,30 +1059,39 @@ class CI_Loader {
 
 		// Set the variable name we will assign the class to
 		// Was a custom class name supplied? If so we'll use it
-		$class = strtolower($class);
+		$class_name = strtolower($class);
 
-		if (is_null($object_name))
+		if (is_null($rename_to))
 		{
-			$classvar = isset($this->_ci_varmap[$class]) ? $this->_ci_varmap[$class] : $class;
+			$classvar = isset($this->_ci_varmap[$class_name]) ? $this->_ci_varmap[$class_name] : $class_name;
 		}
 		else
 		{
-			$classvar = $object_name;
+			$classvar = $rename_to;
 		}
 
 		// Save the class name and object name
-		$this->_ci_classes[$class] = $classvar;
+		$this->_ci_classes[$class_name] = $classvar;
 
 		// Instantiate the class
-		$CI =& get_instance();
 		if ($config !== NULL)
 		{
-			$CI->$classvar = new $name($config);
+			$class = new $name($config);
 		}
 		else
 		{
-			$CI->$classvar = new $name();
+			$class = new $name;
 		}
+
+		// DEPRECATED Future versions (3.1?) will no longer assign to the super-global
+		$CI =& get_instance();
+		if ( ! isset($CI->$classvar))
+		{
+			$CI->$classvar = $class;
+		}
+		// End DEPRECATED
+
+		return $class;
 	}
 
 	// --------------------------------------------------------------------

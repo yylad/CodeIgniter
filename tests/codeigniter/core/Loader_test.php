@@ -21,17 +21,35 @@ class Loader_test extends CI_TestCase {
 	public function test_library()
 	{
 		$this->_setup_config_mock();
-		
-		// Test loading as an array.
+
+		// Test no lib given
+		$this->assertEquals(NULL, $this->load->library());
+
+		// Test loading multiple with an array.
 		$this->assertNull($this->load->library(array('table')));
+
+		// Does the table class exist now its been loaded
 		$this->assertTrue(class_exists('CI_Table'), 'Table class exists');
+
+		// Check the old (now deprecated) super-global assignment works
 		$this->assertAttributeInstanceOf('CI_Table', 'table', $this->ci_obj);
 		
-		// Test no lib given
-		$this->assertEquals(FALSE, $this->load->library());
-		
-		// Test a string given to params
-		$this->assertEquals(NULL, $this->load->library('table', ' '));
+		// Return the library instance
+		$email = $this->load->library('email');
+
+		// The factory created instance must be CI_Email
+		$this->assertInstanceOf('CI_Email', $email);
+
+		// Check the old deprecated approach works too
+		$this->assertInstanceOf('CI_Email', $this->ci_obj->email);
+
+		// Are those two objects entirely the same
+		$this->assertSame($email, $this->ci_obj->email);
+
+		$email2 = $this->load->library('email');
+
+		// Are those two objects entirely the same
+		$this->assertNotSame($email, $email2);
 	}
 
 	// --------------------------------------------------------------------
@@ -42,10 +60,14 @@ class Loader_test extends CI_TestCase {
 		
 		$content = '<?php class Super_test_library {} ';
 		
-		$model = vfsStream::newFile('Super_test_library.php')->withContent($content)
-														->at($this->load->libs_dir);
-		
-		$this->assertNull($this->load->library('super_test_library'));
+		vfsStream::newFile('Super_test_library.php')
+			->withContent($content)
+			->at($this->load->libs_dir);
+
+		// Return the library instance
+		$library = $this->load->library('super_test_library');
+
+		$this->assertInstanceOf('Super_test_library', $library);
 		
 		// Was the model class instantiated.
 		$this->assertTrue(class_exists('Super_test_library'));		
@@ -73,7 +95,7 @@ class Loader_test extends CI_TestCase {
 		$this->setExpectedException(
 			'RuntimeException',
 			'CI Error: Unable to locate the model you have specified: ci_test_nonexistent_model.php'
-			);
+		);
 			
 		$this->load->model('ci_test_nonexistent_model.php');
 	}
