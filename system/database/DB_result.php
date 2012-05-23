@@ -38,14 +38,14 @@
  */
 class CI_DB_result {
 
-	public $conn_id				= NULL;
-	public $result_id			= NULL;
+	public $conn_id;
+	public $result_id;
 	public $result_array			= array();
 	public $result_object			= array();
 	public $custom_result_object		= array();
 	public $current_row			= 0;
 	public $num_rows			= 0;
-	public $row_data			= NULL;
+	public $row_data;
 
 	public function __construct(&$driver_object)
 	{
@@ -242,7 +242,7 @@ class CI_DB_result {
 		$result = $this->custom_result_object($type);
 		if (count($result) === 0)
 		{
-			return $result;
+			return FALSE;
 		}
 
 		if ($n != $this->current_row && isset($result[$n]))
@@ -263,7 +263,7 @@ class CI_DB_result {
 		$result = $this->result_object();
 		if (count($result) === 0)
 		{
-			return $result;
+			return FALSE;
 		}
 
 		if ($n != $this->current_row && isset($result[$n]))
@@ -286,7 +286,7 @@ class CI_DB_result {
 		$result = $this->result_array();
 		if (count($result) === 0)
 		{
-			return $result;
+			return FALSE;
 		}
 
 		if ($n != $this->current_row && isset($result[$n]))
