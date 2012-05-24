@@ -242,7 +242,7 @@ class CI_DB_result {
 		$result = $this->custom_result_object($type);
 		if (count($result) === 0)
 		{
-			return FALSE;
+			return NULL;
 		}
 
 		if ($n != $this->current_row && isset($result[$n]))
@@ -263,7 +263,7 @@ class CI_DB_result {
 		$result = $this->result_object();
 		if (count($result) === 0)
 		{
-			return FALSE;
+			return NULL;
 		}
 
 		if ($n != $this->current_row && isset($result[$n]))
@@ -286,7 +286,7 @@ class CI_DB_result {
 		$result = $this->result_array();
 		if (count($result) === 0)
 		{
-			return FALSE;
+			return NULL;
 		}
 
 		if ($n != $this->current_row && isset($result[$n]))
