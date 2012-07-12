@@ -32,22 +32,22 @@
  * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/database/
  */
-class CI_DB_sqlsrv_utility extends CI_DB_utility {
+class CI_DB_sqlsrv_utility extends CI_DB_utility
+{
+    protected $_list_databases	= 'EXEC sp_helpdb'; // Can also be: EXEC sp_databases
+    protected $_optimize_table	= 'ALTER INDEX all ON %s REORGANIZE';
 
-	protected $_list_databases	= 'EXEC sp_helpdb'; // Can also be: EXEC sp_databases
-	protected $_optimize_table	= 'ALTER INDEX all ON %s REORGANIZE';
-
-	/**
-	 * SQLSRV Export
-	 *
-	 * @param	array	Preferences
-	 * @return	bool
-	 */
-	protected function _backup($params = array())
-	{
-		// Currently unsupported
-		return $this->db->display_error('db_unsuported_feature');
-	}
+    /**
+     * SQLSRV Export
+     *
+     * @param	array	Preferences
+     * @return	bool
+     */
+    protected function _backup($params = array())
+    {
+        // Currently unsupported
+        return $this->db->display_error('db_unsuported_feature');
+    }
 
 }
 

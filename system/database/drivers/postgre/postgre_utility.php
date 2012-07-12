@@ -32,22 +32,22 @@
  * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/database/
  */
-class CI_DB_postgre_utility extends CI_DB_utility {
+class CI_DB_postgre_utility extends CI_DB_utility
+{
+    protected $_list_databases	= 'SELECT datname FROM pg_database';
+    protected $_optimize_table	= 'REINDEX TABLE %s';
 
-	protected $_list_databases	= 'SELECT datname FROM pg_database';
-	protected $_optimize_table	= 'REINDEX TABLE %s';
-
-	/**
-	 * Postgre Export
-	 *
-	 * @param	array	Preferences
-	 * @return	mixed
-	 */
-	protected function _backup($params = array())
-	{
-		// Currently unsupported
-		return $this->db->display_error('db_unsuported_feature');
-	}
+    /**
+     * Postgre Export
+     *
+     * @param	array	Preferences
+     * @return	mixed
+     */
+    protected function _backup($params = array())
+    {
+        // Currently unsupported
+        return $this->db->display_error('db_unsuported_feature');
+    }
 }
 
 /* End of file postgre_utility.php */

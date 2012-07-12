@@ -34,145 +34,136 @@
  * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/general/errors.html
  */
-class CI_Log {
+class CI_Log
+{
+    /**
+     * Path to save log files
+     *
+     * @var string
+     */
+    protected $_log_path;
 
-	/**
-	 * Path to save log files
-	 *
-	 * @var string
-	 */
-	protected $_log_path;
+    /**
+     * Level of logging
+     *
+     * @var int
+     */
+    protected $_threshold		= 1;
 
-	/**
-	 * Level of logging
-	 *
-	 * @var int
-	 */
-	protected $_threshold		= 1;
+    /**
+     * Highest level of logging
+     *
+     * @var int
+     */
+    protected $_threshold_max	= 0;
 
-	/**
-	 * Highest level of logging
-	 *
-	 * @var int
-	 */
-	protected $_threshold_max	= 0;
+    /**
+     * Array of threshold levels to log
+     *
+     * @var array
+     */
+    protected $_threshold_array	= array();
 
-	/**
-	 * Array of threshold levels to log
-	 *
-	 * @var array
-	 */
-	protected $_threshold_array	= array();
+    /**
+     * Format of timestamp for log files
+     *
+     * @var string
+     */
+    protected $_date_fmt		= 'Y-m-d H:i:s';
 
-	/**
-	 * Format of timestamp for log files
-	 *
-	 * @var string
-	 */
-	protected $_date_fmt		= 'Y-m-d H:i:s';
+    /**
+     * Whether or not the logger can write to the log files
+     *
+     * @var bool
+     */
+    protected $_enabled		= TRUE;
 
-	/**
-	 * Whether or not the logger can write to the log files
-	 *
-	 * @var bool
-	 */
-	protected $_enabled		= TRUE;
+    /**
+     * Predefined logging levels
+     *
+     * @var array
+     */
+    protected $_levels		= array('ERROR' => 1, 'DEBUG' => 2,  'INFO' => 3, 'ALL' => 4);
 
-	/**
-	 * Predefined logging levels
-	 *
-	 * @var array
-	 */
-	protected $_levels		= array('ERROR' => 1, 'DEBUG' => 2,  'INFO' => 3, 'ALL' => 4);
+    /**
+     * Initialize Logging class
+     *
+     * @return	void
+     */
+    public function __construct()
+    {
+        $config =& get_config();
 
-	/**
-	 * Initialize Logging class
-	 *
-	 * @return	void
-	 */
-	public function __construct()
-	{
-		$config =& get_config();
+        $this->_log_path = ($config['log_path'] !== '') ? $config['log_path'] : APPPATH.'logs/';
 
-		$this->_log_path = ($config['log_path'] !== '') ? $config['log_path'] : APPPATH.'logs/';
+        if ( ! is_dir($this->_log_path) OR ! is_really_writable($this->_log_path)) {
+            $this->_enabled = FALSE;
+        }
 
-		if ( ! is_dir($this->_log_path) OR ! is_really_writable($this->_log_path))
-		{
-			$this->_enabled = FALSE;
-		}
+        if (is_numeric($config['log_threshold'])) {
+            $this->_threshold = (int) $config['log_threshold'];
+        } elseif (is_array($config['log_threshold'])) {
+            $this->_threshold = $this->_threshold_max;
+            $this->_threshold_array = array_flip($config['log_threshold']);
+        }
 
-		if (is_numeric($config['log_threshold']))
-		{
-			$this->_threshold = (int) $config['log_threshold'];
-		}
-		elseif (is_array($config['log_threshold']))
-		{
-			$this->_threshold = $this->_threshold_max;
-			$this->_threshold_array = array_flip($config['log_threshold']);
-		}
+        if ($config['log_date_format'] !== '') {
+            $this->_date_fmt = $config['log_date_format'];
+        }
+    }
 
-		if ($config['log_date_format'] !== '')
-		{
-			$this->_date_fmt = $config['log_date_format'];
-		}
-	}
+    // --------------------------------------------------------------------
 
-	// --------------------------------------------------------------------
+    /**
+     * Write Log File
+     *
+     * Generally this function will be called using the global log_message() function
+     *
+     * @param	string	the error level
+     * @param	string	the error message
+     * @param	bool	whether the error is a native PHP error
+     * @return	bool
+     */
+    public function write_log($level = 'error', $msg, $php_error = FALSE)
+    {
+        if ($this->_enabled === FALSE) {
+            return FALSE;
+        }
 
-	/**
-	 * Write Log File
-	 *
-	 * Generally this function will be called using the global log_message() function
-	 *
-	 * @param	string	the error level
-	 * @param	string	the error message
-	 * @param	bool	whether the error is a native PHP error
-	 * @return	bool
-	 */
-	public function write_log($level = 'error', $msg, $php_error = FALSE)
-	{
-		if ($this->_enabled === FALSE)
-		{
-			return FALSE;
-		}
+        $level = strtoupper($level);
 
-		$level = strtoupper($level);
-
-		if (( ! isset($this->_levels[$level]) OR ($this->_levels[$level] > $this->_threshold))
-			&& ! isset($this->_threshold_array[$this->_levels[$level]]))
-		{
-			return FALSE;
-		}
+        if (( ! isset($this->_levels[$level]) OR ($this->_levels[$level] > $this->_threshold))
+            && ! isset($this->_threshold_array[$this->_levels[$level]]))
+        {
+            return FALSE;
+        }
 
 
-		$filepath = $this->_log_path.'log-'.date('Y-m-d').'.php';
-		$message  = '';
+        $filepath = $this->_log_path.'log-'.date('Y-m-d').'.php';
+        $message  = '';
 
-		if ( ! file_exists($filepath))
-		{
-			$newfile = TRUE;
-			$message .= '<'."?php if ( ! defined('BASEPATH')) exit('No direct script access allowed'); ?".">\n\n";
-		}
+        if ( ! file_exists($filepath)) {
+            $newfile = TRUE;
+            $message .= '<'."?php if ( ! defined('BASEPATH')) exit('No direct script access allowed'); ?".">\n\n";
+        }
 
-		if ( ! $fp = @fopen($filepath, FOPEN_WRITE_CREATE))
-		{
-			return FALSE;
-		}
+        if ( ! $fp = @fopen($filepath, FOPEN_WRITE_CREATE)) {
+            return FALSE;
+        }
 
-		$message .= $level.' '.($level === 'INFO' ? ' -' : '-').' '.date($this->_date_fmt).' --> '.$msg."\n";
+        $message .= $level.' '.($level === 'INFO' ? ' -' : '-').' '.date($this->_date_fmt).' --> '.$msg."\n";
 
-		flock($fp, LOCK_EX);
-		fwrite($fp, $message);
-		flock($fp, LOCK_UN);
-		fclose($fp);
+        flock($fp, LOCK_EX);
+        fwrite($fp, $message);
+        flock($fp, LOCK_UN);
+        fclose($fp);
 
-		if (isset($newfile) && $newfile === TRUE)
-		{
-			@chmod($filepath, FILE_WRITE_MODE);
-		}
+        if (isset($newfile) && $newfile === TRUE) {
+            @chmod($filepath, FILE_WRITE_MODE);
+        }
 
-		return TRUE;
-	}
+        return TRUE;
+    }
 
 }
 

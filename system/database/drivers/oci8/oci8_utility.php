@@ -32,21 +32,21 @@
  * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/database/
  */
-class CI_DB_oci8_utility extends CI_DB_utility {
+class CI_DB_oci8_utility extends CI_DB_utility
+{
+    protected $_list_databases	= 'SELECT username FROM dba_users'; // Schemas are actual usernames
 
-	protected $_list_databases	= 'SELECT username FROM dba_users'; // Schemas are actual usernames
-
-	/**
-	 * Oracle Export
-	 *
-	 * @param	array	Preferences
-	 * @return	mixed
-	 */
-	protected function _backup($params = array())
-	{
-		// Currently unsupported
-		return $this->db->display_error('db_unsuported_feature');
-	}
+    /**
+     * Oracle Export
+     *
+     * @param	array	Preferences
+     * @return	mixed
+     */
+    protected function _backup($params = array())
+    {
+        // Currently unsupported
+        return $this->db->display_error('db_unsuported_feature');
+    }
 
 }
 

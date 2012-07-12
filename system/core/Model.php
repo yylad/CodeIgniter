@@ -34,31 +34,31 @@
  * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/libraries/config.html
  */
-class CI_Model {
+class CI_Model
+{
+    /**
+     * Initialize CI_Model Class
+     *
+     * @return	void
+     */
+    public function __construct()
+    {
+        log_message('debug', 'Model Class Initialized');
+    }
 
-	/**
-	 * Initialize CI_Model Class
-	 *
-	 * @return	void
-	 */
-	public function __construct()
-	{
-		log_message('debug', 'Model Class Initialized');
-	}
-
-	/**
-	 * __get
-	 *
-	 * Allows models to access CI's loaded classes using the same
-	 * syntax as controllers.
-	 *
-	 * @param	string
-	 */
-	public function __get($key)
-	{
-		$CI =& get_instance();
-		return $CI->$key;
-	}
+    /**
+     * __get
+     *
+     * Allows models to access CI's loaded classes using the same
+     * syntax as controllers.
+     *
+     * @param	string
+     */
+    public function __get($key)
+    {
+        $CI =& get_instance();
+        return $CI->$key;
+    }
 
 }
 

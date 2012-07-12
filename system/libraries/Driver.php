@@ -37,82 +37,75 @@
  * @author		EllisLab Dev Team
  * @link
  */
-class CI_Driver_Library {
+class CI_Driver_Library
+{
+    /**
+     * Array of drivers that are available to use with the driver class
+     *
+     * @var array
+     */
+    protected $valid_drivers = array();
 
-	/**
-	 * Array of drivers that are available to use with the driver class
-	 *
-	 * @var array
-	 */
-	protected $valid_drivers = array();
+    /**
+     * Name of the current class - usually the driver class
+     *
+     * @var string
+     */
+    protected $lib_name;
 
-	/**
-	 * Name of the current class - usually the driver class
-	 *
-	 * @var string
-	 */
-	protected $lib_name;
+    /**
+     * The first time a child is used it won't exist, so we instantiate it
+     * subsequents calls will go straight to the proper child.
+     *
+     * @param	mixed	$child
+     * @return	mixed
+     */
+    public function __get($child)
+    {
+        if ( ! isset($this->lib_name)) {
+            $this->lib_name = get_class($this);
+        }
 
-	/**
-	 * The first time a child is used it won't exist, so we instantiate it
-	 * subsequents calls will go straight to the proper child.
-	 *
-	 * @param	mixed	$child
-	 * @return	mixed
-	 */
-	public function __get($child)
-	{
-		if ( ! isset($this->lib_name))
-		{
-			$this->lib_name = get_class($this);
-		}
+        // The class will be prefixed with the parent lib
+        $child_class = $this->lib_name.'_'.$child;
 
-		// The class will be prefixed with the parent lib
-		$child_class = $this->lib_name.'_'.$child;
+        // Remove the CI_ prefix and lowercase
+        $lib_name = ucfirst(strtolower(str_replace('CI_', '', $this->lib_name)));
+        $driver_name = strtolower(str_replace('CI_', '', $child_class));
 
-		// Remove the CI_ prefix and lowercase
-		$lib_name = ucfirst(strtolower(str_replace('CI_', '', $this->lib_name)));
-		$driver_name = strtolower(str_replace('CI_', '', $child_class));
+        if (in_array($driver_name, array_map('strtolower', $this->valid_drivers))) {
+            // check and see if the driver is in a separate file
+            if ( ! class_exists($child_class)) {
+                // check application path first
+                foreach (get_instance()->load->get_package_paths(TRUE) as $path) {
+                    // loves me some nesting!
+                    foreach (array(ucfirst($driver_name), $driver_name) as $class) {
+                        $filepath = $path.'libraries/'.$lib_name.'/drivers/'.$class.'.php';
 
-		if (in_array($driver_name, array_map('strtolower', $this->valid_drivers)))
-		{
-			// check and see if the driver is in a separate file
-			if ( ! class_exists($child_class))
-			{
-				// check application path first
-				foreach (get_instance()->load->get_package_paths(TRUE) as $path)
-				{
-					// loves me some nesting!
-					foreach (array(ucfirst($driver_name), $driver_name) as $class)
-					{
-						$filepath = $path.'libraries/'.$lib_name.'/drivers/'.$class.'.php';
+                        if (file_exists($filepath)) {
+                            include_once $filepath;
+                            break 2;
+                        }
+                    }
+                }
 
-						if (file_exists($filepath))
-						{
-							include_once $filepath;
-							break 2;
-						}
-					}
-				}
+                // it's a valid driver, but the file simply can't be found
+                if ( ! class_exists($child_class)) {
+                    log_message('error', 'Unable to load the requested driver: '.$child_class);
+                    show_error('Unable to load the requested driver: '.$child_class);
+                }
+            }
 
-				// it's a valid driver, but the file simply can't be found
-				if ( ! class_exists($child_class))
-				{
-					log_message('error', 'Unable to load the requested driver: '.$child_class);
-					show_error('Unable to load the requested driver: '.$child_class);
-				}
-			}
+            $obj = new $child_class;
+            $obj->decorate($this);
+            $this->$child = $obj;
+            return $this->$child;
+        }
 
-			$obj = new $child_class;
-			$obj->decorate($this);
-			$this->$child = $obj;
-			return $this->$child;
-		}
-
-		// The requested driver isn't valid!
-		log_message('error', 'Invalid driver requested: '.$child_class);
-		show_error('Invalid driver requested: '.$child_class);
-	}
+        // The requested driver isn't valid!
+        log_message('error', 'Invalid driver requested: '.$child_class);
+        show_error('Invalid driver requested: '.$child_class);
+    }
 
 }
 
@@ -130,140 +123,130 @@ class CI_Driver_Library {
  * @author		EllisLab Dev Team
  * @link
  */
-class CI_Driver {
+class CI_Driver
+{
+    /**
+     * Instance of the parent class
+     *
+     * @var object
+     */
+    protected $_parent;
 
-	/**
-	 * Instance of the parent class
-	 *
-	 * @var object
-	 */
-	protected $_parent;
+    /**
+     * List of methods in the parent class
+     *
+     * @var array
+     */
+    protected $_methods = array();
 
-	/**
-	 * List of methods in the parent class
-	 *
-	 * @var array
-	 */
-	protected $_methods = array();
+    /**
+     * List of properties in the parent class
+     *
+     * @var array
+     */
+    protected $_properties = array();
 
-	/**
-	 * List of properties in the parent class
-	 *
-	 * @var array
-	 */
-	protected $_properties = array();
+    /**
+     * Array of methods and properties for the parent class(es)
+     *
+     * @var array
+     */
+    protected static $_reflections = array();
 
-	/**
-	 * Array of methods and properties for the parent class(es)
-	 *
-	 * @var array
-	 */
-	protected static $_reflections = array();
+    /**
+     * Decorate
+     *
+     * Decorates the child with the parent driver lib's methods and properties
+     *
+     * @param	object
+     * @return	void
+     */
+    public function decorate($parent)
+    {
+        $this->_parent = $parent;
 
-	/**
-	 * Decorate
-	 *
-	 * Decorates the child with the parent driver lib's methods and properties
-	 *
-	 * @param	object
-	 * @return	void
-	 */
-	public function decorate($parent)
-	{
-		$this->_parent = $parent;
+        // Lock down attributes to what is defined in the class
+        // and speed up references in magic methods
 
-		// Lock down attributes to what is defined in the class
-		// and speed up references in magic methods
+        $class_name = get_class($parent);
 
-		$class_name = get_class($parent);
+        if ( ! isset(self::$_reflections[$class_name])) {
+            $r = new ReflectionObject($parent);
 
-		if ( ! isset(self::$_reflections[$class_name]))
-		{
-			$r = new ReflectionObject($parent);
+            foreach ($r->getMethods() as $method) {
+                if ($method->isPublic()) {
+                    $this->_methods[] = $method->getName();
+                }
+            }
 
-			foreach ($r->getMethods() as $method)
-			{
-				if ($method->isPublic())
-				{
-					$this->_methods[] = $method->getName();
-				}
-			}
+            foreach ($r->getProperties() as $prop) {
+                if ($prop->isPublic()) {
+                    $this->_properties[] = $prop->getName();
+                }
+            }
 
-			foreach ($r->getProperties() as $prop)
-			{
-				if ($prop->isPublic())
-				{
-					$this->_properties[] = $prop->getName();
-				}
-			}
+            self::$_reflections[$class_name] = array($this->_methods, $this->_properties);
+        } else {
+            list($this->_methods, $this->_properties) = self::$_reflections[$class_name];
+        }
+    }
 
-			self::$_reflections[$class_name] = array($this->_methods, $this->_properties);
-		}
-		else
-		{
-			list($this->_methods, $this->_properties) = self::$_reflections[$class_name];
-		}
-	}
+    // --------------------------------------------------------------------
 
-	// --------------------------------------------------------------------
+    /**
+     * __call magic method
+     *
+     * Handles access to the parent driver library's methods
+     *
+     * @param	string
+     * @param	array
+     * @return	mixed
+     */
+    public function __call($method, $args = array())
+    {
+        if (in_array($method, $this->_methods)) {
+            return call_user_func_array(array($this->_parent, $method), $args);
+        }
 
-	/**
-	 * __call magic method
-	 *
-	 * Handles access to the parent driver library's methods
-	 *
-	 * @param	string
-	 * @param	array
-	 * @return	mixed
-	 */
-	public function __call($method, $args = array())
-	{
-		if (in_array($method, $this->_methods))
-		{
-			return call_user_func_array(array($this->_parent, $method), $args);
-		}
+        $trace = debug_backtrace();
+        _exception_handler(E_ERROR, "No such method '{$method}'", $trace[1]['file'], $trace[1]['line']);
+        exit;
+    }
 
-		$trace = debug_backtrace();
-		_exception_handler(E_ERROR, "No such method '{$method}'", $trace[1]['file'], $trace[1]['line']);
-		exit;
-	}
+    // --------------------------------------------------------------------
 
-	// --------------------------------------------------------------------
+    /**
+     * __get magic method
+     *
+     * Handles reading of the parent driver library's properties
+     *
+     * @param	string
+     * @return	mixed
+     */
+    public function __get($var)
+    {
+        if (in_array($var, $this->_properties)) {
+            return $this->_parent->$var;
+        }
+    }
 
-	/**
-	 * __get magic method
-	 *
-	 * Handles reading of the parent driver library's properties
-	 *
-	 * @param	string
-	 * @return	mixed
-	 */
-	public function __get($var)
-	{
-		if (in_array($var, $this->_properties))
-		{
-			return $this->_parent->$var;
-		}
-	}
+    // --------------------------------------------------------------------
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * __set magic method
-	 *
-	 * Handles writing to the parent driver library's properties
-	 *
-	 * @param	string
-	 * @param	array
-	 * @return	mixed
-	 */
-	public function __set($var, $val)
-	{
-		if (in_array($var, $this->_properties))
-		{
-			$this->_parent->$var = $val;
-		}
-	}
+    /**
+     * __set magic method
+     *
+     * Handles writing to the parent driver library's properties
+     *
+     * @param	string
+     * @param	array
+     * @return	mixed
+     */
+    public function __set($var, $val)
+    {
+        if (in_array($var, $this->_properties)) {
+            $this->_parent->$var = $val;
+        }
+    }
 
 }
 

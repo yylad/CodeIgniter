@@ -37,36 +37,34 @@
 
 // ------------------------------------------------------------------------
 
-if ( ! function_exists('valid_email'))
-{
-	/**
-	 * Validate email address
-	 *
-	 * @param	string
-	 * @return	bool
-	 */
-	function valid_email($email)
-	{
-		return (bool) filter_var($email, FILTER_VALIDATE_EMAIL);
-	}
+if ( ! function_exists('valid_email')) {
+    /**
+     * Validate email address
+     *
+     * @param	string
+     * @return	bool
+     */
+    function valid_email($email)
+    {
+        return (bool) filter_var($email, FILTER_VALIDATE_EMAIL);
+    }
 }
 
 // ------------------------------------------------------------------------
 
-if ( ! function_exists('send_email'))
-{
-	/**
-	 * Send an email
-	 *
-	 * @param	string
-	 * @param	string
-	 * @param	string
-	 * @return	bool
-	 */
-	function send_email($recipient, $subject = 'Test email', $message = 'Hello World')
-	{
-		return mail($recipient, $subject, $message);
-	}
+if ( ! function_exists('send_email')) {
+    /**
+     * Send an email
+     *
+     * @param	string
+     * @param	string
+     * @param	string
+     * @return	bool
+     */
+    function send_email($recipient, $subject = 'Test email', $message = 'Hello World')
+    {
+        return mail($recipient, $subject, $message);
+    }
 }
 
 /* End of file email_helper.php */
