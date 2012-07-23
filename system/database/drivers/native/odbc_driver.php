@@ -38,9 +38,10 @@
  * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/database/
  */
-class CI_DB_odbc_driver extends CI_DB {
+class CI_DB_native_odbc_driver extends CI_DB_native_driver {
 
 	public $dbdriver = 'odbc';
+	public $function_prefix = 'odbc_';
 
 	// the character used to excape - not necessary for ODBC
 	protected $_escape_char = '';
@@ -63,6 +64,8 @@ class CI_DB_odbc_driver extends CI_DB {
 			$this->dsn = $this->hostname;
 		}
 	}
+
+	// --------------------------------------------------------------------
 
 	/**
 	 * Non-persistent database connection
@@ -322,19 +325,7 @@ class CI_DB_odbc_driver extends CI_DB {
 		return 'DELETE FROM '.$table;
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Close DB Connection
-	 *
-	 * @return	void
-	 */
-	protected function _close()
-	{
-		@odbc_close($this->conn_id);
-	}
-
 }
 
 /* End of file odbc_driver.php */
-/* Location: ./system/database/drivers/odbc/odbc_driver.php */
+/* Location: ./system/database/drivers/native/odbc_driver.php */

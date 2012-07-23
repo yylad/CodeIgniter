@@ -35,7 +35,7 @@
  * @link		http://codeigniter.com/user_guide/database/
  * @since	1.3
  */
-class CI_DB_odbc_result extends CI_DB_result {
+class CI_DB_native_odbc_result extends CI_DB_result {
 
 	/**
 	 * Number of rows in the result set
@@ -255,4 +255,4 @@ if ( ! function_exists('odbc_fetch_object'))
 }
 
 /* End of file odbc_result.php */
-/* Location: ./system/database/drivers/odbc/odbc_result.php */
+/* Location: ./system/database/drivers/native/odbc_result.php */
