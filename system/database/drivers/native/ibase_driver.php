@@ -42,13 +42,7 @@ class CI_DB_native_ibase_driver extends CI_DB_native_driver {
 
 	public $dbdriver = 'ibase';
 	public $platform = 'firebird';
-
-	// The character used to escape with
-	protected $_escape_char = '"';
-
-	// clause and character used for LIKE escape sequences
-	protected $_like_escape_str = " ESCAPE '%s' ";
-	protected $_like_escape_chr = '!';
+	public $function_prefix = 'ibase_';
 
 	protected $_random_keyword = ' Random()'; // database specific random keyword
 
@@ -207,18 +201,6 @@ class CI_DB_native_ibase_driver extends CI_DB_native_driver {
 		}
 
 		return $str;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Affected Rows
-	 *
-	 * @return	int
-	 */
-	public function affected_rows()
-	{
-		return @ibase_affected_rows($this->conn_id);
 	}
 
 	// --------------------------------------------------------------------

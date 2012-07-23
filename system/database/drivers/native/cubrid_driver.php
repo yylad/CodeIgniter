@@ -42,6 +42,7 @@ class CI_DB_native_cubrid_driver extends CI_DB_native_driver {
 
 	public $dbdriver = 'cubrid';
 	public $platform = 'cubrid';
+	public $function_prefix = 'cubrid_';
 
 	// The character used for escaping - no need in CUBRID
 	protected $_escape_char = '`';
@@ -295,18 +296,6 @@ class CI_DB_native_cubrid_driver extends CI_DB_native_driver {
 		}
 
 		return $str;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Affected Rows
-	 *
-	 * @return	int
-	 */
-	public function affected_rows()
-	{
-		return @cubrid_affected_rows();
 	}
 
 	// --------------------------------------------------------------------

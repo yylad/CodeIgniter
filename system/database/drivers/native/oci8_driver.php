@@ -51,6 +51,7 @@ class CI_DB_native_oci8_driver extends CI_DB_native_driver {
 
 	public $dbdriver = 'oci8';
 	public $platform = 'oracle';
+	public $function_prefix = 'oci_';
 
 	// The character used for excaping
 	protected $_escape_char = '"';

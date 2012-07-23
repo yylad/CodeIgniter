@@ -42,6 +42,7 @@ class CI_DB_native_sqlsrv_driver extends CI_DB_native_driver {
 
 	public $dbdriver = 'sqlsrv';
 	public $platform = 'mssql';
+	public $function_prefix = 'sqlsrv_';
 
 	// The character used for escaping
 	protected $_escape_char = '"';
@@ -226,7 +227,7 @@ class CI_DB_native_sqlsrv_driver extends CI_DB_native_driver {
 	 */
 	public function affected_rows()
 	{
-		return sqlrv_rows_affected($this->result_id);
+		return sqlsrv_rows_affected($this->result_id);
 	}
 
 	// --------------------------------------------------------------------

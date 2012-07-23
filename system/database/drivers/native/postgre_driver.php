@@ -42,6 +42,7 @@ class CI_DB_native_postgre_driver extends CI_DB_native_driver {
 
 	public $dbdriver = 'postgre';
 	public $platform = 'postgre';
+	public $function_prefix = 'pg_';
 
 	protected $_escape_char = '"';
 

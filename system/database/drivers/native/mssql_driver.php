@@ -42,6 +42,7 @@ class CI_DB_native_mssql_driver extends CI_DB_native_driver {
 
 	public $dbdriver = 'mssql';
 	public $platform = 'mssql';
+	public $function_prefix = 'mssql_';
 
 	// The character used for escaping
 	protected $_escape_char = '"';
