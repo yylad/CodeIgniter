@@ -46,7 +46,6 @@ class Mock_Database_DB {
 
 		$config = array_merge($this->config[$group], $params);
 		$dsnstring = empty($config['dsn']) ? FALSE : $config['dsn'];
-		$subdriver = empty($config['subdriver']) ? FALSE: $config['subdriver'];
 		$failover = empty($config['failover']) ? FALSE : $config['failover'];
 
 		$dsn = $config['dbdriver'].'://'.$config['username'].':'.$config['password']
@@ -55,7 +54,6 @@ class Mock_Database_DB {
 		// Build the parameter
 		$other_params = array_slice($config, 6);
 		if ($dsnstring) $other_params['dsn'] = $dsnstring;
-		if ($subdriver) $other_params['subdriver'] = $subdriver;
 		if ($failover) $other_params['failover'] = $failover;
 
 		return $dsn.'?'.http_build_query($other_params);

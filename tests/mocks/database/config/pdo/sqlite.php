@@ -9,8 +9,7 @@ return array(
 		'username' => 'sqlite',
 		'password' => 'sqlite',
 		'database' => 'sqlite',
-		'dbdriver' => 'pdo',
-		'subdriver' => 'sqlite'
+		'dbdriver' => 'sqlite'
 	),
 
 	// Database configuration with failover
@@ -20,8 +19,7 @@ return array(
 		'username' => 'sqlite',
 		'password' => 'sqlite',
 		'database' => 'sqlite',
-		'dbdriver' => 'pdo',
-		'subdriver' => 'sqlite',
+		'dbdriver' => 'sqlite',
 		'failover' => array(
 			array(
 				'dsn' => 'sqlite:/'.realpath(__DIR__.'/../..').'/ci_test.sqlite',
@@ -29,8 +27,7 @@ return array(
 				'username' => 'sqlite',
 				'password' => 'sqlite',
 				'database' => 'sqlite',
-				'dbdriver' => 'pdo',
-				'subdriver' => 'sqlite'
+				'dbdriver' => 'sqlite'
 			)
 		)
 	)

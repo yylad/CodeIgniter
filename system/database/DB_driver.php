@@ -45,11 +45,12 @@ abstract class CI_DB_driver {
 	public $password;
 	public $hostname;
 	public $database;
-	public $dbdriver		= 'mysqli';
-	public $subdriver;
+	public $dbdriver;
+	public $db_iface;
+	public $platform;
 	public $dbprefix		= '';
-	public $char_set		= 'utf8';
-	public $dbcollat		= 'utf8_general_ci';
+	public $char_set;
+	public $dbcollat;
 	public $autoinit		= TRUE; // Whether to automatically initialize the DB
 	public $swap_pre		= '';
 	public $port			= '';
@@ -339,7 +340,7 @@ abstract class CI_DB_driver {
 		// cached query if it exists
 		if ($this->cache_on === TRUE && $return_object === TRUE && $this->_cache_init())
 		{
-			$this->load_rdriver();
+			$this->_load_rdriver();
 			if (FALSE !== ($cache = $this->CACHE->read($sql)))
 			{
 				return $cache;
@@ -418,7 +419,7 @@ abstract class CI_DB_driver {
 		}
 
 		// Load and instantiate the result driver
-		$driver		= $this->load_rdriver();
+		$driver		= $this->_load_rdriver();
 		$RES		= new $driver($this);
 
 		// Is query caching enabled? If so, we'll serialize the
@@ -453,14 +454,14 @@ abstract class CI_DB_driver {
 	 *
 	 * @return	string	the name of the result class
 	 */
-	public function load_rdriver()
+	protected function _load_rdriver()
 	{
-		$driver = 'CI_DB_'.$this->dbdriver.'_result';
+		$driver = 'CI_DB_'.$this->db_iface.'_result';
 
 		if ( ! class_exists($driver))
 		{
-			include_once(BASEPATH.'database/DB_result.php');
-			include_once(BASEPATH.'database/drivers/'.$this->dbdriver.'/'.$this->dbdriver.'_result.php');
+			require_once(BASEPATH.'database/DB_result.php');
+			require_once(BASEPATH.'database/drivers/'.$this->db_iface.'_result.php');
 		}
 
 		return $driver;

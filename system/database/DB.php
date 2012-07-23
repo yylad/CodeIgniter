@@ -156,33 +156,33 @@ function &DB($params = '', $query_builder_override = NULL)
 		class CI_DB extends CI_DB_driver { }
 	}
 
-	// Load the DB driver
-	$driver_file = BASEPATH.'database/drivers/'.$params['dbdriver'].'/'.$params['dbdriver'].'_driver.php';
+	// We might have the driver interface specified
+	if (isset($params['db_iface']))
+	{
+		$driver_class = _DB_driver($params['db_iface'], $params['dbdriver']);
+	}
+	else
+	{
+		// If we don't have a (valid) PDO DSN - look for a native driver first.
+		$precedence = (empty($params['dsn']) OR ! preg_match('/^[a-z0-9]+\:[a-z]+\=.+/i', trim($params['dsn'])))
+			? array('native', 'pdo')
+			: array('pdo', 'native');
 
-	if ( ! file_exists($driver_file))
+		foreach ($precedence as $driver_iface)
+		{
+			if (($driver_class = _DB_driver($driver_iface, $params['dbdriver'])) !== FALSE)
+			{
+				break;
+			}
+		}
+	}
+
+	if ($driver_class === FALSE)
 	{
 		show_error('Invalid DB driver');
 	}
 
-	require_once($driver_file);
-
-	// Instantiate the DB adapter
-	$driver = 'CI_DB_'.$params['dbdriver'].'_driver';
-	$DB = new $driver($params);
-
-	// Check for a subdriver
-	if ( ! empty($DB->subdriver))
-	{
-		$driver_file = BASEPATH.'database/drivers/'.$DB->dbdriver.'/subdrivers/'.$DB->dbdriver.'_'.$DB->subdriver.'_driver.php';
-
-		if (file_exists($driver_file))
-		{
-			require_once($driver_file);
-			$driver = 'CI_DB_'.$DB->dbdriver.'_'.$DB->subdriver.'_driver';
-			$DB = new $driver($params);
-		}
-	}
-
+	$DB = new $driver_class($params);
 	if ($DB->autoinit === TRUE)
 	{
 		$DB->initialize();
@@ -194,6 +194,30 @@ function &DB($params = '', $query_builder_override = NULL)
 	}
 
 	return $DB;
+}
+
+/**
+ * Load driver file and return the DB driver class to instantiate
+ *
+ * @param	string	$iface	'pdo' or 'native'
+ * @param	string	$driver	the driver name
+ * @return	string	class name
+ */
+function _DB_driver($iface, $driver)
+{
+	require_once(BASEPATH.'/database/drivers/'.$iface.'_driver.php');
+
+	$class_name = 'CI_DB_'.$iface.'_'.$driver.'_driver';
+	if ( ! class_exists('CI_DB_'.$iface.'_'.$driver.'_driver'))
+	{
+		$driver_file = BASEPATH.'/database/drivers/'.$iface.'/'.$driver.'_driver.php';
+		if ( ! file_exists($driver_file) OR ! include_once($driver_file))
+		{
+			return FALSE;
+		}
+	}
+
+	return $class_name;
 }
 
 /* End of file DB.php */

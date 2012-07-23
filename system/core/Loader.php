@@ -392,11 +392,20 @@ class CI_Loader {
 
 		$CI =& get_instance();
 
-		require_once(BASEPATH.'database/DB_forge.php');
-		require_once(BASEPATH.'database/drivers/'.$CI->db->dbdriver.'/'.$CI->db->dbdriver.'_forge.php');
-		$class = 'CI_DB_'.$CI->db->dbdriver.'_forge';
+		$class_name = 'CI_DB_'.$CI->db->platform.'_forge';
+		if (empty($CI->db->platform))
+		{
+			show_error('DB Forge is not supported for '.$CI->db->platform);
+			return;
+		}
 
-		$CI->dbforge = new $class();
+		if ( ! class_exists($class_name))
+		{
+			require_once(BASEPATH.'database/DB_forge.php');
+			require_once(BASEPATH.'database/forge/'.$CI->db->platform.'_forge.php');
+		}
+
+		$CI->dbforge = new $class_name();
 	}
 
 	// --------------------------------------------------------------------

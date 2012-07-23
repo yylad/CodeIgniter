@@ -9,7 +9,7 @@ return array(
 		'username' => 'travis',
 		'password' => '',
 		'database' => 'ci_test',
-		'dbdriver' => 'mysql'
+		'dbdriver' => 'mysqli'
 	),
 
 	// Database configuration with failover
@@ -19,7 +19,7 @@ return array(
 		'username' => 'not_travis',
 		'password' => 'wrong password',
 		'database' => 'not_ci_test',
-		'dbdriver' => 'mysql',
+		'dbdriver' => 'mysqli',
 		'failover' => array(
 			array(
 				'dsn' => '',
@@ -27,7 +27,7 @@ return array(
 				'username' => 'travis',
 				'password' => '',
 				'database' => 'ci_test',
-				'dbdriver' => 'mysql',
+				'dbdriver' => 'mysqli',
 			)
 		)
 	)
