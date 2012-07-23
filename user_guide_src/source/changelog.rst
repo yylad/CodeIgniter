@@ -137,8 +137,8 @@ Release Date: Not Released
    -  Added PDO support for create_database(), drop_database and drop_table() in :doc:`Database Forge <database/forge>`.
    -  Added unbuffered_row() method for getting a row without prefetching whole result (consume less memory).
    -  Added PDO support for ``list_fields()`` in :doc:`Database Results <database/results>`.
-   -  Added capability for packages to hold database.php config files 
-   -  Added subdrivers support (currently only used by PDO).
+   -  Added capability for packages to hold database.php config files.
+   -  Added OOP support for the ``call_function()`` method (used by SQLite3, PDO).
 
 -  Libraries
 
@@ -316,6 +316,7 @@ Bug fixes for 3.0
 -  Fixed a bug (#135) - PHP Error logging was impossible without the errors being displayed.
 -  Fixed a bug (#1613) - :doc:`Form Helper <helpers/form_helper>` functions ``form_multiselect()``, ``form_dropdown()`` didn't properly handle empty array option groups.
 -  Fixed a bug (#1605) - :doc:`Pagination Library <libraries/pagination>` produced incorrect *previous* and *next* link values.
+-  Fixed a bug in :doc:`Database method call_function() <database/call_function>` where it failed with the OCI8 and PDO drivers.
 
 Version 2.1.2
 =============

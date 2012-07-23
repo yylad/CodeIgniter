@@ -65,6 +65,7 @@ abstract class CI_DB_driver {
 	public $queries			= array();
 	public $query_times		= array();
 	public $data_cache		= array();
+	public $function_prefix;
 
 	public $trans_enabled		= TRUE;
 	public $trans_strict		= TRUE;
@@ -1182,23 +1183,35 @@ abstract class CI_DB_driver {
 	 * @param	mixed	any parameters needed by the function
 	 * @return	mixed
 	 */
-	public function call_function($function)
+	public function call_function($func)
 	{
-		$driver = ($this->dbdriver === 'postgre') ? 'pg_' : $this->dbdriver.'_';
-
-		if (FALSE === strpos($driver, $function))
+		// Procedural
+		if (isset($this->function_prefix))
 		{
-			$function = $driver.$function;
+			if (FALSE === strpos($func, $this->function_prefix))
+			{
+				$func = $this->function_prefix.$func;
+			}
+
+			if ( ! function_exists($func))
+			{
+				return ($this->db_debug) ? $this->display_error('db_unsupported_function') : FALSE;
+			}
 		}
-
-		if ( ! function_exists($function))
+		else
+		// OOP
 		{
-			return ($this->db_debug) ? $this->display_error('db_unsupported_function') : FALSE;
+			if ( ! method_exists($this->conn_id, $func))
+			{
+				return ($this->db_debug) ? $this->display_error('db_unsupported_function') : FALSE;
+			}
+
+			$func = array($this->conn_id, $func);
 		}
 
 		return (func_num_args() > 1)
-			? call_user_func_array($function, array_splice(func_get_args(), 1))
-			: call_user_func($function);
+			? call_user_func_array($func, array_splice(func_get_args(), 1))
+			: call_user_func($func);
 	}
 
 	// --------------------------------------------------------------------

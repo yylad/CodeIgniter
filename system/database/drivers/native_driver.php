@@ -40,8 +40,6 @@
  */
 abstract class CI_DB_native_driver extends CI_DB {
 
-	public $function_prefix;
-
 	// The character used to escaping
 	protected $_escape_char = '"';
 
