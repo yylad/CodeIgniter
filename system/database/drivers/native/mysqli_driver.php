@@ -42,6 +42,7 @@ class CI_DB_native_mysqli_driver extends CI_DB_native_driver {
 
 	public $dbdriver = 'mysqli';
 	public $platform = 'mysql';
+	public $function_prefix = 'mysqli_';
 
 	// The character used for escaping
 	protected $_escape_char = '`';
@@ -445,18 +446,6 @@ class CI_DB_native_mysqli_driver extends CI_DB_native_driver {
 		return 'UPDATE '.$table.' SET '.substr($cases, 0, -2)
 			.' WHERE '.(($where !== '' && count($where) > 0) ? implode(' ', $where).' AND ' : '')
 			.$index.' IN('.implode(',', $ids).')';
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Close DB Connection
-	 *
-	 * @return	void
-	 */
-	protected function _close()
-	{
-		$this->conn_id->close();
 	}
 
 }

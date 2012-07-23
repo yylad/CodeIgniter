@@ -652,18 +652,6 @@ class CI_DB_native_postgre_driver extends CI_DB_native_driver {
 		return $this;
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Close DB Connection
-	 *
-	 * @return	void
-	 */
-	protected function _close()
-	{
-		@pg_close($this->conn_id);
-	}
-
 }
 
 /* End of file postgre_driver.php */

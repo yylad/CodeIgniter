@@ -498,18 +498,6 @@ class CI_DB_native_mssql_driver extends CI_DB_native_driver {
 		return preg_replace('/(^\SELECT (DISTINCT)?)/i','\\1 TOP '.$limit.' ', $sql);
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Close DB Connection
-	 *
-	 * @return	void
-	 */
-	protected function _close()
-	{
-		@mssql_close($this->conn_id);
-	}
-
 }
 
 /* End of file mssql_driver.php */

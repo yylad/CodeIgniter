@@ -648,18 +648,6 @@ class CI_DB_native_oci8_driver extends CI_DB_native_driver {
 			.($offset ? ' WHERE rnum >= '.($offset + 1): '');
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Close DB Connection
-	 *
-	 * @return	void
-	 */
-	protected function _close()
-	{
-		@oci_close($this->conn_id);
-	}
-
 }
 
 /* End of file oci8_driver.php */

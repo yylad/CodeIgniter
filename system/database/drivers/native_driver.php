@@ -81,6 +81,19 @@ abstract class CI_DB_native_driver extends CI_DB {
 		return @$func($this->conn_id);
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Close DB Connection
+	 *
+	 * @return	void
+	 */
+	protected function _close()
+	{
+		$func = $this->function_prefix.'_close';
+		@$func($this->conn_id);
+	}
+
 }
 
 /* End of file native_driver.php */

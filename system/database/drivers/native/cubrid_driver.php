@@ -418,18 +418,6 @@ class CI_DB_native_cubrid_driver extends CI_DB_native_driver {
 			.$index.' IN ('.implode(',', $ids).')';
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Close DB Connection
-	 *
-	 * @return	void
-	 */
-	protected function _close()
-	{
-		@cubrid_close($this->conn_id);
-	}
-
 }
 
 /* End of file cubrid_driver.php */

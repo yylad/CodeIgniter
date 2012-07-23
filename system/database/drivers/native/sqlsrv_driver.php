@@ -493,18 +493,6 @@ class CI_DB_native_sqlsrv_driver extends CI_DB_native_driver {
 		return preg_replace('/(^\SELECT (DISTINCT)?)/i','\\1 TOP '.$limit.' ', $sql);
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Close DB Connection
-	 *
-	 * @return	void
-	 */
-	protected function _close()
-	{
-		@sqlsrv_close($this->conn_id);
-	}
-
 }
 
 /* End of file sqlsrv_driver.php */
