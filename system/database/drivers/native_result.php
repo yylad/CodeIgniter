@@ -26,60 +26,84 @@
  */
 
 /**
- * SQLSRV Result Class
+ * Native Driver Result Class
  *
  * This class extends the parent result class: CI_DB_result
  *
  * @category	Database
  * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/database/
- * @since	2.0.3
+ * @since	2.1
  */
-class CI_DB_native_sqlsrv_result extends CI_DB_native_result {
+abstract class CI_DB_native_result extends CI_DB_result {
+
+	public $function_prefix;
 
 	/**
-	 * Fetch Field Names
+	 * Constructor
 	 *
-	 * Generates an array of column names
+	 * Gets the function prefix from the driver class
 	 *
-	 * @return	array
+	 * @param	object
+	 * @return	void
 	 */
-	public function list_fields()
+	public function __construct(&$driver_object)
 	{
-		$field_names = array();
-		foreach (sqlsrv_field_metadata($this->result_id) as $offset => $field)
-		{
-			$field_names[] = $field['Name'];
-		}
-
-		return $field_names;
+		parent::__construct($driver_object);
+		$this->function_prefix = $driver_object->function_prefix;
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Field data
+	 * Number of rows in the result set
 	 *
-	 * Generates an array of objects containing field meta-data
-	 *
-	 * @return	array
+	 * @return	int
 	 */
-	public function field_data()
+	public function num_rows()
 	{
-		$retval = array();
-		foreach (sqlsrv_field_metadata($this->result_id) as $offset => $field)
+		if (is_int($this->num_rows))
 		{
-			$F 		= new stdClass();
-			$F->name 	= $field['Name'];
-			$F->type 	= $field['Type'];
-			$F->max_length	= $field['Size'];
-			$F->primary_key = 0;
-			$F->default	= '';
-
-			$retval[] = $F;
+			return $this->num_rows;
+		}
+		elseif (count($this->result_array) > 0)
+		{
+			return $this->num_rows = count($this->result_array);
+		}
+		elseif (count($this->result_object) > 0)
+		{
+			return $this->num_rows = count($this->result_object);
+		}
+		elseif ($this->function_prefix !== NULL)
+		{
+			$func = $this->function_prefix.'num_rows';
+			if (function_exists($func) && ($num_rows = $func($this->result_id)) > -1)
+			{
+				return $this->num_rows = $num_rows;
+			}
 		}
 
-		return $retval;
+		return $this->num_rows = count($this->result_array());
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Number of fields in the result set
+	 *
+	 * @return	int
+	 */
+	public function num_fields()
+	{
+		if ($this->function_prefix !== NULL)
+		{
+			$func = $this->function_prefix.'_num_fields';
+			return function_exists($func)
+				? $func($this->result_id)
+				: FALSE;
+		}
+
+		return FALSE;
 	}
 
 	// --------------------------------------------------------------------
@@ -91,9 +115,10 @@ class CI_DB_native_sqlsrv_result extends CI_DB_native_result {
 	 */
 	public function free_result()
 	{
-		if (is_resource($this->result_id))
+		if ( ! empty($this->result_id))
 		{
-			sqlsrv_free_stmt($this->result_id);
+			$func = $this->function_prefix.'_free_result';
+			$func($this->result_id);
 			$this->result_id = FALSE;
 		}
 	}
@@ -109,25 +134,11 @@ class CI_DB_native_sqlsrv_result extends CI_DB_native_result {
 	 */
 	protected function _fetch_assoc()
 	{
-		return sqlsrv_fetch_array($this->result_id, SQLSRV_FETCH_ASSOC);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Result - object
-	 *
-	 * Returns the result set as an object
-	 *
-	 * @param	string
-	 * @return	object
-	 */
-	protected function _fetch_object($class_name = 'stdClass')
-	{
-		return sqlsrv_fetch_object($this->result_id, $class_name);
+		$func = $this->function_prefix.'_fetch_assoc';
+		return $func($this->result_id);
 	}
 
 }
 
-/* End of file sqlsrv_result.php */
-/* Location: ./system/database/drivers/native/sqlsrv_result.php */
+/* End of file native_result.php */
+/* Location: ./system/database/drivers/native_result.php */

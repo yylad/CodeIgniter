@@ -35,7 +35,7 @@
  * @link		http://codeigniter.com/user_guide/database/
  * @since	1.4.1
  */
-class CI_DB_native_oci8_result extends CI_DB_result {
+class CI_DB_native_oci8_result extends CI_DB_native_result {
 
 	public $stmt_id;
 	public $curs_id;

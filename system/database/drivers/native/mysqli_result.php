@@ -35,33 +35,7 @@
  * @link		http://codeigniter.com/user_guide/database/
  * @since	1.3
  */
-class CI_DB_native_mysqli_result extends CI_DB_result {
-
-	/**
-	 * Number of rows in the result set
-	 *
-	 * @return	int
-	 */
-	public function num_rows()
-	{
-		return is_int($this->num_rows)
-			? $this->num_rows
-			: $this->num_rows = $this->result_id->num_rows;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Number of fields in the result set
-	 *
-	 * @return	int
-	 */
-	public function num_fields()
-	{
-		return $this->result_id->field_count;
-	}
-
-	// --------------------------------------------------------------------
+class CI_DB_native_mysqli_result extends CI_DB_native_result {
 
 	/**
 	 * Fetch Field Names
@@ -110,22 +84,6 @@ class CI_DB_native_mysqli_result extends CI_DB_result {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Free the result
-	 *
-	 * @return	void
-	 */
-	public function free_result()
-	{
-		if (is_object($this->result_id))
-		{
-			$this->result_id->free();
-			$this->result_id = FALSE;
-		}
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Data Seek
 	 *
 	 * Moves the internal pointer to the desired offset. We call
@@ -137,20 +95,6 @@ class CI_DB_native_mysqli_result extends CI_DB_result {
 	protected function _data_seek($n = 0)
 	{
 		return $this->result_id->data_seek($n);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Result - associative array
-	 *
-	 * Returns the result set as an array
-	 *
-	 * @return	array
-	 */
-	protected function _fetch_assoc()
-	{
-		return $this->result_id->fetch_assoc();
 	}
 
 	// --------------------------------------------------------------------

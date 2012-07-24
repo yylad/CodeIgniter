@@ -35,50 +35,7 @@
  * @link		http://codeigniter.com/user_guide/database/
  * @since	1.3
  */
-class CI_DB_native_odbc_result extends CI_DB_result {
-
-	/**
-	 * Number of rows in the result set
-	 *
-	 * @return	int
-	 */
-	public function num_rows()
-	{
-		if (is_int($this->num_rows))
-		{
-			return $this->num_rows;
-		}
-		elseif (($this->num_rows = @odbc_num_rows($this->result_id)) !== -1)
-		{
-			return $this->num_rows;
-		}
-
-		// Work-around for ODBC subdrivers that don't support num_rows()
-		if (count($this->result_array) > 0)
-		{
-			return $this->num_rows = count($this->result_array);
-		}
-		elseif (count($this->result_object) > 0)
-		{
-			return $this->num_rows = count($this->result_object);
-		}
-
-		return $this->num_rows = count($this->result_array());
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Number of fields in the result set
-	 *
-	 * @return	int
-	 */
-	public function num_fields()
-	{
-		return @odbc_num_fields($this->result_id);
-	}
-
-	// --------------------------------------------------------------------
+class CI_DB_native_odbc_result extends CI_DB_native_result {
 
 	/**
 	 * Fetch Field Names
@@ -126,22 +83,6 @@ class CI_DB_native_odbc_result extends CI_DB_result {
 		}
 
 		return $retval;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Free the result
-	 *
-	 * @return	void
-	 */
-	public function free_result()
-	{
-		if (is_resource($this->result_id))
-		{
-			odbc_free_result($this->result_id);
-			$this->result_id = FALSE;
-		}
 	}
 
 	// --------------------------------------------------------------------

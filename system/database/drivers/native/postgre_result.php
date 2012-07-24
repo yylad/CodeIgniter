@@ -35,33 +35,7 @@
  * @link		http://codeigniter.com/user_guide/database/
  * @since	1.3
  */
-class CI_DB_native_postgre_result extends CI_DB_result {
-
-	/**
-	 * Number of rows in the result set
-	 *
-	 * @return	int
-	 */
-	public function num_rows()
-	{
-		return is_int($this->num_rows)
-			? $this->num_rows
-			: $this->num_rows = @pg_num_rows($this->result_id);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Number of fields in the result set
-	 *
-	 * @return	int
-	 */
-	public function num_fields()
-	{
-		return @pg_num_fields($this->result_id);
-	}
-
-	// --------------------------------------------------------------------
+class CI_DB_native_postgre_result extends CI_DB_native_result {
 
 	/**
 	 * Fetch Field Names
@@ -109,22 +83,6 @@ class CI_DB_native_postgre_result extends CI_DB_result {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Free the result
-	 *
-	 * @return	void
-	 */
-	public function free_result()
-	{
-		if (is_resource($this->result_id))
-		{
-			pg_free_result($this->result_id);
-			$this->result_id = FALSE;
-		}
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Data Seek
 	 *
 	 * Moves the internal pointer to the desired offset. We call
@@ -136,20 +94,6 @@ class CI_DB_native_postgre_result extends CI_DB_result {
 	protected function _data_seek($n = 0)
 	{
 		return pg_result_seek($this->result_id, $n);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Result - associative array
-	 *
-	 * Returns the result set as an array
-	 *
-	 * @return	array
-	 */
-	protected function _fetch_assoc()
-	{
-		return pg_fetch_assoc($this->result_id);
 	}
 
 	// --------------------------------------------------------------------

@@ -35,19 +35,7 @@
  * @link		http://codeigniter.com/user_guide/database/
  * @since	3.0
  */
-class CI_DB_native_ibase_result extends CI_DB_result {
-
-	/**
-	 * Number of fields in the result set
-	 *
-	 * @return	int
-	 */
-	public function num_fields()
-	{
-		return @ibase_num_fields($this->result_id);
-	}
-
-	// --------------------------------------------------------------------
+class CI_DB_native_ibase_result extends CI_DB_native_result {
 
 	/**
 	 * Fetch Field Names
@@ -93,18 +81,6 @@ class CI_DB_native_ibase_result extends CI_DB_result {
 		}
 
 		return $retval;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Free the result
-	 *
-	 * @return	void
-	 */
-	public function free_result()
-	{
-		@ibase_free_result($this->result_id);
 	}
 
 	// --------------------------------------------------------------------

@@ -35,33 +35,7 @@
  * @link		http://codeigniter.com/user_guide/database/
  * @since	2.1
  */
-class CI_DB_native_cubrid_result extends CI_DB_result {
-
-	/**
-	 * Number of rows in the result set
-	 *
-	 * @return	int
-	 */
-	public function num_rows()
-	{
-		return is_int($this->num_rows)
-			? $this->num_rows
-			: $this->num_rows = @cubrid_num_rows($this->result_id);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Number of fields in the result set
-	 *
-	 * @return	int
-	 */
-	public function num_fields()
-	{
-		return @cubrid_num_fields($this->result_id);
-	}
-
-	// --------------------------------------------------------------------
+class CI_DB_native_cubrid_result extends CI_DB_native_result {
 
 	/**
 	 * Fetch Field Names
@@ -137,20 +111,6 @@ class CI_DB_native_cubrid_result extends CI_DB_result {
 	protected function _data_seek($n = 0)
 	{
 		return cubrid_data_seek($this->result_id, $n);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Result - associative array
-	 *
-	 * Returns the result set as an array
-	 *
-	 * @return	array
-	 */
-	protected function _fetch_assoc()
-	{
-		return cubrid_fetch_assoc($this->result_id);
 	}
 
 	// --------------------------------------------------------------------
