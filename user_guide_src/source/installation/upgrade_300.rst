@@ -55,7 +55,7 @@ With the change from a single Session Library to the new Session Driver, two new
    -  ``$config['sess_driver']`` selects which driver to initially load. Options are:
        -  'cookie' (the default) for classic CodeIgniter cookie-based sessions
        -  'native' for native PHP Session support
-       -  the name of a custom driver you have provided (see :doc:`Session Driver <../libraries/sessions>` for more info)
+       -  the name of a custom driver you have provided (see :doc:`Session Driver </libraries/sessions>` for more info)
    -  ``$config['sess_valid_drivers']`` provides an array of additional custom drivers to make available for loading
 
 As the new Session Driver library loads the classic Cookie driver by default and always makes 'cookie' and 'native'
@@ -104,7 +104,6 @@ regular expression::
 	(.+)	// matches ANYTHING
 	(:any)	// matches any character, except for '/'
 
-
 ****************************************************************************
 Step 9: Check the calls to Array Helper's element() and elements() functions
 ****************************************************************************
@@ -138,7 +137,7 @@ If your application relies on IF EXISTS, you'll have to change its usage.
 Step 11: Change usage of Email library with multiple emails
 ***********************************************************
 
-The :doc:`Email library <../libraries/email>` will automatically clear the
+The :doc:`Email library </libraries/email>` will automatically clear the
 set parameters after successfully sending emails. To override this behaviour,
 pass FALSE as the first parameter in the ``send()`` method:
 
@@ -163,7 +162,7 @@ The SHA1 library
 The previously deprecated SHA1 library has been removed, alter your code to use PHP's native
 ``sha1()`` function to generate a SHA1 hash.
 
-Additionally, the ``sha1()`` method in the :doc:`Encryption Library <../libraries/encryption>` has been removed.
+Additionally, the ``sha1()`` method in the :doc:`Encryption Library </libraries/encryption>` has been removed.
 
 The EXT constant
 ================
@@ -175,13 +174,13 @@ the ``EXT`` constant has been removed. Use just '.php' instead.
 Smiley helper js_insert_smiley()
 ================================
 
-:doc:`Smiley Helper <../helpers/smiley_helper>` function ``js_insert_smiley()`` has been deprecated
-since CodeIgniter 1.7.2 and is now removed. You'll need to switch to ``smiley_js()`` instead.
+:doc:`Smiley Helper </helpers/smiley_helper>` function ``js_insert_smiley()`` has been deprecated
+since CodeIgniter 1.7.2 and is now removed. You'll need to switch to :php:doc:`smiley_js()` instead.
 
 Security helper do_hash()
 =========================
 
-:doc:`Security Helper <../helpers/security_helper>` function ``do_hash()`` is now just an alias for
+:doc:`Security Helper </helpers/security_helper>` function ``do_hash()`` is now just an alias for
 PHP's native ``hash()`` function. It is deprecated and scheduled for removal in CodeIgniter 3.1+.
 
 .. note:: This function is still available, but you're strongly encouraged to remove it's usage sooner
@@ -190,42 +189,46 @@ PHP's native ``hash()`` function. It is deprecated and scheduled for removal in 
 File helper read_file()
 =======================
 
-:doc:`File Helper <../helpers/file_helper>` function ``read_file()`` is now just an alias for
+:doc:`File Helper </helpers/file_helper>` function ``read_file()`` is now just an alias for
 PHP's native ``file_get_contents()`` function. It is deprecated and scheduled for removal in
 CodeIgniter 3.1+.
 
 .. note:: This function is still available, but you're strongly encouraged to remove it's usage sooner
 	rather than later.
 
-String helper repeater()
-========================
+String helper repeater() and trim_slashes()
+===========================================
 
-:doc:`String Helper <../helpers/string_helper>` function :php:func:`repeater()` is now just an alias for
-PHP's native ``str_repeat()`` function. It is deprecated and scheduled for removal in CodeIgniter 3.1+.
+ - Function ``repeater()`` is now just an alias for PHP's native ``str_repeat()`` function.
+ - Function ``trim_slashes()`` is now just an alias for PHP's native ``trim()`` function,
+   with a slash passed as its second argument).
 
-.. note:: This function is still available, but you're strongly encouraged to remove it's usage sooner
-	rather than later.
+Both functions are deprecated and scheduled for removal in CodeIgniter 3.1+.
 
-String helper trim_slashes()
-============================
+.. note:: These functions are still available, but you're strongly encouraged to remove it's usage
+	sooner rather than later.
 
-:doc:`String Helper <../helpers/string_helper>` function :php:func:`trim_slashes()` is now just an alias
-for PHP's native ``trim()`` function (with a slash passed as its second argument). It is deprecated and
-scheduled for removal in CodeIgniter 3.1+.
+String helper random_string() types 'unique' and 'encrypt'
+==========================================================
 
-.. note:: This function is still available, but you're strongly encouraged to remove it's usage sooner
-	rather than later.
+When using the :doc:`String Helper </helpers/string_helper>` function :php:func:`random_string()`,
+you should no longer pass the **unique** and **encrypt** randomization types. They are only
+aliases for **md5** and **sha1** respectively and are now deprecated and scheduled for removal
+in CodeIgniter 3.1+.
+
+.. note:: These options are still available, but you're strongly encouraged to remove their usage
+	sooner rather than later.
 
 Email helper functions
 ======================
 
-:doc:`Email Helper <../helpers/email_helper>` only has two functions
+:doc:`Email Helper </helpers/email_helper>` only has two functions
 
- - :php:func:`valid_email()`
- - :php:func:`send_email()`
+ - ``valid_email()``
+ - ``send_email()``
 
 Both of them are now aliases for PHP's native ``filter_var()`` and ``mail()`` functions, respectively.
-Therefore the :doc:`Email Helper <../helpers/email_helper>` altogether is being deprecated and
+Therefore the :doc:`Email Helper </helpers/email_helper>` altogether is being deprecated and
 is scheduled for removal in CodeIgniter 3.1+.
 
 .. note:: These functions are still available, but you're strongly encouraged to remove their usage
@@ -234,7 +237,7 @@ is scheduled for removal in CodeIgniter 3.1+.
 Date helper standard_date()
 ===========================
 
-:doc:`Date Helper <../helpers/date_helper>` function ``standard_date()`` is being deprecated due
+:doc:`Date Helper </helpers/date_helper>` function ``standard_date()`` is being deprecated due
 to the availability of native PHP `constants <http://www.php.net/manual/en/class.datetime.php#datetime.constants.types>`_,
 which when combined with ``date()`` provide the same functionality. Furthermore, they have the
 exact same names as the ones supported by ``standard_date()``. Here are examples of how to replace
@@ -260,7 +263,7 @@ it's usage:
 Pagination library 'anchor_class' setting
 =========================================
 
-The :doc:`Pagination Library <../libraries/pagination>` now supports adding pretty much any HTML
+The :doc:`Pagination Library </libraries/pagination>` now supports adding pretty much any HTML
 attribute to your anchors via the 'attributes' configuration setting. This includes passing the
 'class' attribute and using the separate 'anchor_class' setting no longer makes sense.
 As a result of that, the 'anchor_class' setting is now deprecated and scheduled for removal in
@@ -269,21 +272,10 @@ CodeIgniter 3.1+.
 .. note:: This setting is still available, but you're strongly encouraged to remove its' usage sooner
 	rather than later.
 
-String helper random_string() types 'unique' and 'encrypt'
-==========================================================
-
-When using the :doc:`String Helper <helpers/string_helper>` function :php:func:`random_string()`,
-you should no longer pass the **unique** and **encrypt** randomization types. They are only
-aliases for **md5** and **sha1** respectively and are now deprecated and scheduled for removal
-in CodeIgniter 3.1+.
-
-.. note:: These options are still available, but you're strongly encouraged to remove their usage
-	sooner rather than later.
-
 URL helper url_title() separators 'dash' and 'underscore'
 =========================================================
 
-When using the :doc:`URL Helper <helpers/url_helper>` function :php:func:`url_title()`, you
+When using the :doc:`URL Helper </helpers/url_helper>` function :php:func:`url_title()`, you
 should no longer pass **dash** or **underscore** as the word separator. This function will
 now accept any character and you should just pass the chosen character directly, so you
 should write '-' instead of 'dash' and '_' instead of 'underscore'.
@@ -294,10 +286,24 @@ in CodeIgniter 3.1+.
 .. note:: These options are still available, but you're strongly encouraged to remove their usage
 	sooner rather than later.
 
+Input Library method set_cookie()
+=================================
+
+:doc:`Input Library </libraries/input>` method ``set_cookie()`` is not an alias for
+the new common function :php:func:`set_cookie()`. It is deprecated and scheduled for
+removal in CodeIgniter 3.1.+
+
+.. note:: This method is still available, but you're strongly encouraged to remove its usage
+	sooner rather than later.
+
+.. note:: Former :doc:`Cookie Helper </helpers/cookie_helper>` function ``set_cookie()``
+	has been replaced with this new one, so now you also don't need to load the cookie
+	helper in order to use it.
+
 Database Forge method add_column() with an AFTER clause
 =======================================================
 
-If you have used the **third parameter** for :doc:`Database Forge <database/forge>` method
+If you have used the **third parameter** for :doc:`Database Forge </database/forge>` method
 ``add_column()`` to add a field for an AFTER clause, then you should change its usage.
 
 That third parameter has been deprecated and scheduled for removal in CodeIgniter 3.1+.

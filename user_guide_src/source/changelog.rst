@@ -99,6 +99,7 @@ Release Date: Not Released
    -  :doc:`Directory Helper <helpers/directory_helper>` :php:func:`directory_map()` will now append ``DIRECTORY_SEPARATOR`` to directory names in the returned array.
    -  :doc:`Language Helper <helpers/language_helper>` :php:func:`lang()` now accepts an optional list of additional HTML attributes.
    -  Deprecated the :doc:`Email Helper <helpers/email_helper>` as its ``valid_email()``, ``send_email()`` functions are now only aliases for PHP native functions ``filter_var()`` and ``mail()`` respectively.
+   -  :doc:`Cookie Helper <helpers/cookie_helper>` function ``set_cookie()`` is now replaced by a :doc:`common function <general/common_functions>` with the same name.
 
 -  Database
 
@@ -284,6 +285,7 @@ Release Date: Not Released
 	 -  Changed method ``valid_ip()`` to use PHP's native ``filter_var()`` function.
 	 -  Changed internal method ``_sanitize_globals()`` to skip enforcing reversal of *register_globals* in PHP 5.4+, where this functionality no longer exists.
 	 -  Changed methods ``get()``, ``post()``, ``get_post()``, ``cookie()``, ``server()``, ``user_agent()`` to return NULL instead of FALSE when no value is found.
+	 -  Method ``set_cookie()`` is not DEPRECATED and is just an alias for common function :php:func:`set_cookie()`.
    -  :doc:`Common functions <general/common_functions>` changes include:
 	 -  Added function :php:func:`get_mimes()` to return the *application/config/mimes.php* array.
 	 -  Added support for HTTP code 303 ("See Other") in :php:func:`set_status_header()`.
@@ -291,13 +293,14 @@ Release Date: Not Released
 	 -  Changed ``_exception_handler()`` to respect php.ini *display_errors* setting.
 	 -  Added function :php:func:`is_https()` to check if a secure connection is used.
 	 -  Added function :php:func:`function_usable()` to check if a function exists and is not disabled by `Suhosin <http://www.hardened-php.net/suhosin/>`.
-   -  Added support for HTTP-Only cookies with new config option *cookie_httponly* (default FALSE).
+	 -  Added function :php:func:`set_cookie()` that replaces already set cookies with a matching name (regardless of how they were set) and also sets a *Max-Age* attribute as opposed to just *Expires*.
    -  Renamed method ``_call_hook()`` to ``call_hook()`` in the :doc:`Hooks Library <general/hooks>`.
    -  :doc:`Output Library <libraries/output>` changes include:
 	 -  Added a second argument to method ``set_content_type()`` that allows setting the document charset as well.
 	 -  Added methods ``get_content_type()`` and ``get_header()``.
 	 -  Added method ``delete_cache()``.
    -  ``$config['time_reference']`` now supports all timezone strings supported by PHP.
+   -  Added support for HTTP-Only cookies with new config option *cookie_httponly* (default FALSE).
    -  :doc:`Config Library <libraries/config>` changes include:
 	 -  Changed ``site_url()`` method  to accept an array as well.
 	 -  Removed internal method ``_assign_to_config()`` and moved it's implementation in *CodeIgniter.php* instead.
@@ -305,6 +308,7 @@ Release Date: Not Released
 	 -  Added method ``strip_image_tags()``.
 	 -  Added ``$config['csrf_regeneration']``, which makes token regeneration optional.
 	 -  Added ``$config['csrf_exclude_uris']``, which allows you list URIs which will not have the CSRF validation methods run.
+	 -  Method ``csrf_set_cookie()`` now uses the new :php:func:`set_cookie()` function.
    -  :doc:`URI Routing <general/routing>` changes include:
 	 -  Added possibility to route requests using callbacks.
 	 -  Added possibility to use dashes in the controller and method URI segments (translated to underscores).
@@ -459,6 +463,7 @@ Bug fixes for 3.0
 -  Fixed a bug (#18) - :doc:`APC Cache <libraries/caching>` driver didn't (un)serialize data, resulting in failure to store objects.
 -  Fixed a bug (#188) - :doc:`Unit Testing Library <libraries/unit_testing>` filled up logs with error messages for non-existing language keys.
 -  Fixed a bug (#113) - :doc:`Form Validation Library <libraries/form_validation>` didn't properly handle empty fields that were specified as an array.
+-  Fixed a bug (#1345) - :doc:`Session Library <libraries/sessions>` sent multiple cookies with the same name when the session cookie value changed.
 
 Version 2.1.3
 =============

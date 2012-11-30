@@ -49,4 +49,11 @@ class Common_test extends CI_TestCase {
 		);
 	}
 
+	// ------------------------------------------------------------------------
+
+	public function test_set_cookie()
+	{
+		$this->markTestSkipped('Need to find a way to overcome a headers already sent exception');
+	}
+
 }

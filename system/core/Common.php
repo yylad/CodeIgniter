@@ -698,5 +698,182 @@ if ( ! function_exists('function_usable'))
 	}
 }
 
+// ------------------------------------------------------------------------
+
+if ( ! function_exists('set_cookie'))
+{
+	/**
+	 * Set cookie
+	 *
+	 * Sends a cookie, taking care to replace it in the PHP header() queue,
+	 * if one with the same name already exists.
+	 *
+	 * Accepts an arbitrary number of parameters (up to 7) or an associative
+	 * array in the first parameter containing all the values.
+	 *
+	 * @param	string|mixed[]	$name		Cookie name or an array containing parameters
+	 * @param	string		$value		Cookie value
+	 * @param	int		$expire		Cookie expiration time in seconds
+	 * @param	string		$domain		Cookie domain (e.g.: '.yourdomain.com')
+	 * @param	string		$path		Cookie path (default: '/')
+	 * @param	string		$prefix		Cookie name prefix
+	 * @param	bool		$secure		Whether to only transfer cookies via SSL
+	 * @param	bool		$httponly	Whether to only makes the cookie accessible via HTTP (no javascript)
+	 * @return	void
+	 */
+	function set_cookie($name, $value = '', $expire = NULL, $path = NULL, $domain = NULL, $prefix = NULL, $secure = NULL, $httponly = NULL)
+	{
+		// Were the parameters passed as an array?
+		if (is_array($name))
+		{
+			// always leave 'name' in last place, as the loop will break otherwise, due to $$item
+			foreach (array('value', 'expire', 'domain', 'path', 'prefix', 'secure', 'httponly', 'name') as $item)
+			{
+				if (isset($name[$item]))
+				{
+					$$item = $name[$item];
+				}
+			}
+		}
+
+		// Sanitize our parameters
+		if ($secure === NULL)
+		{
+			$secure = config_item('cookie_secure');
+		}
+
+		// Do we have to send the cookie at all?
+		if ($secure === TRUE && ! is_https())
+		{
+			return;
+		}
+
+		// Prepend our name prefix
+		$name = ($prefix === NULL ? config_item('cookie_prefix') : $prefix)
+			.$name;
+
+		$payload = 'Set-Cookie: '.$name.'='.urlencode($value).';';
+
+		// If we don't have a valid expiry time - expire the cookie
+		is_numeric($expire) OR $expire = -31536000;
+
+		// Only send expiry time if it's not a zero value
+		//
+		// DO NOT CHANGE THIS EXPRESSION!
+		// Multiple side effects can occur if you do, including:
+		//
+		//	!==	Ignores non-integer values
+		//	>, >=	Ignore negative values
+		if ($expire != 0)
+		{
+			// GMT is the most safe choice
+			$payload .=' Expires='.gmdate('D, d-M-Y H:i:s T', time() + $expire).';'
+				// RFC6265 describes the Max-Age attribute:
+				//
+				// - Specifies the cookie lifetime in seconds
+				// - Not supported by all user agents (naturally, as it was introduced in 2011)
+				// - User agents that don't support it will simply ignore it
+				// - User agents that support it MUST use it instead of Expires, when present
+				//
+				// Reference: http://tools.ietf.org/rfc/rfc6265.txt
+				//
+				// For the above reasons, and because some user agents might not calculate
+				// timezone differences properly (e.g. due to the system timezone setting
+				// not being correct), sending the Max-Age attribute is our safest option.
+				//
+				// The downside is - it doesn't accept negative values.
+				.($expire > 0 ? ' Max-Age='.$expire.';' : '');
+		}
+
+		$payload .= ' Path='.(empty($path) ? config_item('cookie_path') : $path).';'
+			.' Domain='.(empty($domain) ? config_item('cookie_domain') : $domain)
+			.($secure ? '; Secure' : ''); // We've already initialized this one
+
+		if ($httponly === NULL)
+		{
+			$httponly = config_item('cookie_httponly');
+		}
+
+		$payload .= ($httponly ? '; HttpOnly' : '');
+
+		// Now, let's go through the headers to see if we've already sent any cookies.
+		// To allow usage of header_remove() later, iterate in a decremental order.
+		$queue = array();
+		for ($headers = headers_list(), $i = count($headers) - 1; $i > -1; $i--)
+		{
+			// Is it a cookie? Get its name and cache it
+			if (sscanf($headers[$i], 'Set-Cookie: %[^=]', $cookie_name) !== 1)
+			{
+				$queue[$cookie_name] = $headers[$i];
+			}
+		}
+
+		// If a matching cookie name doesn't exist - just send,
+		// if it does and IF it is the only cookie - replace it.
+		if (($re = isset($queue[$name])) === FALSE OR ($re = (count($queue) === 1)))
+		{
+			header($payload, $re);
+			return;
+		}
+
+		// OK, so a matching cookie name is already queued and we have other cookies as well.
+		// We need to replace the matching cookie with our own.
+		//
+		// We'll be relying on the $re variable to determine our procedure's state and behavior:
+		//
+		//	(bool) Search for the right cookie to replace and when found:
+		//
+		//		TRUE: Clear all of the headers
+		//		FALSE: Use header_remove() to only remove the relevant headers
+		//
+		//	(null) Re-send previously removed headers
+		//
+		$re = ! is_php('5.3');
+		do
+		{
+			// Re-send the removed Set-Cookie headers.
+			// This will only happen after our cookie was sent.
+			if ($re === NULL)
+			{
+				header($payload);
+				if (prev($queue) !== FALSE)
+				{
+					continue;
+				}
+				else
+				{
+					break;
+				}
+			}
+
+			// Do we use header_remove() or do we have to replace all Set-Cookie headers?
+			if ($re === FALSE)
+			{
+				header_remove('Set-Cookie');
+			}
+
+			// If the cookie name matches ours - replace the queue header entry with our own
+			if (key($queue) === $name)
+			{
+				header($payload, $re);
+
+				// If we didn't use header_replace(), remove the old cookie matching our
+				// name so it doesn't get re-sent and set the pointer to the last entry.
+				if ($re === TRUE)
+				{
+					unset($queue[$name]);
+					end($queue);
+				}
+
+				// Switch to re-sending more
+				$re = NULL;
+				continue;
+			}
+		}
+		// We won't get to this point once $re is set to NULL
+		while (next($queue) !== FALSE);
+	}
+}
+
 /* End of file Common.php */
 /* Location: ./system/core/Common.php */

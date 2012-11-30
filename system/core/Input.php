@@ -310,9 +310,6 @@ class CI_Input {
 	/**
 	 * Set cookie
 	 *
-	 * Accepts an arbitrary number of parameters (up to 7) or an associative
-	 * array in the first parameter containing all the values.
-	 *
 	 * @param	string|mixed[]	$name		Cookie name or an array containing parameters
 	 * @param	string		$value		Cookie value
 	 * @param	int		$expire		Cookie expiration time in seconds
@@ -322,56 +319,12 @@ class CI_Input {
 	 * @param	bool		$secure		Whether to only transfer cookies via SSL
 	 * @param	bool		$httponly	Whether to only makes the cookie accessible via HTTP (no javascript)
 	 * @return	void
+	 * @deprecated	3.0.0		An alias for common function set_cookie()
+	 * @see		set_cookie()
 	 */
-	public function set_cookie($name = '', $value = '', $expire = '', $domain = '', $path = '/', $prefix = '', $secure = FALSE, $httponly = FALSE)
+	public function set_cookie($name, $value = '', $expire = NULL, $domain = NULL, $path = NULL, $prefix = NULL, $secure = NULL, $httponly = NULL)
 	{
-		if (is_array($name))
-		{
-			// always leave 'name' in last place, as the loop will break otherwise, due to $$item
-			foreach (array('value', 'expire', 'domain', 'path', 'prefix', 'secure', 'httponly', 'name') as $item)
-			{
-				if (isset($name[$item]))
-				{
-					$$item = $name[$item];
-				}
-			}
-		}
-
-		if ($prefix === '' && config_item('cookie_prefix') !== '')
-		{
-			$prefix = config_item('cookie_prefix');
-		}
-
-		if ($domain == '' && config_item('cookie_domain') != '')
-		{
-			$domain = config_item('cookie_domain');
-		}
-
-		if ($path === '/' && config_item('cookie_path') !== '/')
-		{
-			$path = config_item('cookie_path');
-		}
-
-		if ($secure === FALSE && config_item('cookie_secure') !== FALSE)
-		{
-			$secure = config_item('cookie_secure');
-		}
-
-		if ($httponly === FALSE && config_item('cookie_httponly') !== FALSE)
-		{
-			$httponly = config_item('cookie_httponly');
-		}
-
-		if ( ! is_numeric($expire))
-		{
-			$expire = time() - 86500;
-		}
-		else
-		{
-			$expire = ($expire > 0) ? time() + $expire : 0;
-		}
-
-		setcookie($prefix.$name, $value, $expire, $path, $domain, $secure, $httponly);
+		set_cookie($name, $value, $expire, $domain, $path, $prefix, $secure, $httponly);
 	}
 
 	// --------------------------------------------------------------------

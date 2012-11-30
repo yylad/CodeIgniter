@@ -192,3 +192,12 @@ if ( ! function_exists('set_status_header'))
 		return TRUE;
 	}
 }
+
+// TODO: Find a way to get around the "headers already sent" issue
+if ( ! function_exists('set_cookie'))
+{
+	function set_cookie($name, $value = '', $expire = NULL, $path = NULL, $domain = NULL, $prefix = NULL, $httponly = NULL)
+	{
+		return;
+	}
+}

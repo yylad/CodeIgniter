@@ -172,58 +172,10 @@ parameter::
 $this->input->set_cookie()
 ==========================
 
-Sets a cookie containing the values you specify. There are two ways to
-pass information to this method so that a cookie can be set: Array
-Method, and Discrete Parameters:
+Sets a cookie containing the values you specify.
+This method is an alias for common function :php:func:`set_cookie()`.
 
-Array Method
-^^^^^^^^^^^^
-
-Using this method, an associative array is passed to the first
-parameter::
-
-	$cookie = array(
-	    'name'   => 'The Cookie Name',
-	    'value'  => 'The Value',
-	    'expire' => '86500',
-	    'domain' => '.some-domain.com',
-	    'path'   => '/',
-	    'prefix' => 'myprefix_',
-	    'secure' => TRUE
-	);
-
-	$this->input->set_cookie($cookie);
-
-**Notes:**
-
-Only the name and value are required. To delete a cookie set it with the
-expiration blank.
-
-The expiration is set in **seconds**, which will be added to the current
-time. Do not include the time, but rather only the number of seconds
-from *now* that you wish the cookie to be valid. If the expiration is
-set to zero the cookie will only last as long as the browser is open.
-
-For site-wide cookies regardless of how your site is requested, add your
-URL to the **domain** starting with a period, like this:
-.your-domain.com
-
-The path is usually not needed since the method sets a root path.
-
-The prefix is only needed if you need to avoid name collisions with
-other identically named cookies for your server.
-
-The secure boolean is only needed if you want to make it a secure cookie
-by setting it to TRUE.
-
-Discrete Parameters
-^^^^^^^^^^^^^^^^^^^
-
-If you prefer, you can set the cookie by passing data using individual
-parameters::
-
-	$this->input->set_cookie($name, $value, $expire, $domain, $path, $prefix, $secure);
-
+.. note:: This method is DEPRECATED. Use :php:func:`set_cookie()` instead.
 
 $this->input->ip_address()
 ==========================

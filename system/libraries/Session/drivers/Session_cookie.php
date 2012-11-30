@@ -306,8 +306,7 @@ class CI_Session_cookie extends CI_Session_driver {
 		}
 
 		// Kill the cookie
-		$this->_setcookie($this->sess_cookie_name, '', ($this->now - 31500000),
-			$this->cookie_path, $this->cookie_domain, 0);
+		set_cookie($this->sess_cookie_name, '', -31500000, $this->cookie_path, $this->cookie_domain, '', FALSE);
 
 		// Kill session data
 		$this->userdata = array();
@@ -694,32 +693,11 @@ class CI_Session_cookie extends CI_Session_driver {
 		// Require message authentication
 		$cookie_data .= hash_hmac('sha1', $cookie_data, $this->encryption_key);
 
-		$expire = ($this->sess_expire_on_close === TRUE) ? 0 : $this->sess_expiration + time();
+		$expire = ($this->sess_expire_on_close === TRUE) ? 0 : $this->sess_expiration;
 
 		// Set the cookie
-		$this->_setcookie($this->sess_cookie_name, $cookie_data, $expire, $this->cookie_path, $this->cookie_domain,
-			$this->cookie_secure, $this->cookie_httponly);
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Set a cookie with the system
-	 *
-	 * This abstraction of the setcookie call allows overriding for unit testing
-	 *
-	 * @param	string	Cookie name
-	 * @param	string	Cookie value
-	 * @param	int	Expiration time
-	 * @param	string	Cookie path
-	 * @param	string	Cookie domain
-	 * @param	bool	Secure connection flag
-	 * @param	bool	HTTP protocol only flag
-	 * @return	void
-	 */
-	protected function _setcookie($name, $value = '', $expire = 0, $path = '', $domain = '', $secure = FALSE, $httponly = FALSE)
-	{
-		setcookie($name, $value, $expire, $path, $domain, $secure, $httponly);
+		set_cookie($this->sess_cookie_name, $cookie_data, $expire, $this->cookie_path, $this->cookie_domain,
+				'', $this->cookie_secure, $this->cookie_httponly);
 	}
 
 	// ------------------------------------------------------------------------

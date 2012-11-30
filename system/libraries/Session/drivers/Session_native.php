@@ -200,7 +200,7 @@ class CI_Session_native extends CI_Session_driver {
 		{
 			// Clear session cookie
 			$params = session_get_cookie_params();
-			setcookie($name, '', time() - 42000, $params['path'], $params['domain'], $params['secure'], $params['httponly']);
+			set_cookie($name, '', -42000, $params['path'], $params['domain'], '', $params['secure'], $params['httponly']);
 			unset($_COOKIE[$name]);
 		}
 		session_destroy();

@@ -9,22 +9,7 @@ class Cookie_helper_test extends CI_TestCase {
 
 	// ------------------------------------------------------------------------
 
-	function test_set_cookie()
-	{
-		/*$input_cls = $this->ci_core_class('input');
-		$this->ci_instance_var('input', new $input_cls);
-
-		$this->assertTrue(set_cookie(
-			'my_cookie',
-			'foobar'
-		));*/
-
-		$this->markTestSkipped('Need to find a way to overcome a headers already set exception');
-	}
-
-	// ------------------------------------------------------------------------
-
-	function test_get_cookie()
+	public function test_get_cookie()
 	{
 		$_COOKIE['foo'] = 'bar';
 
@@ -44,7 +29,7 @@ class Cookie_helper_test extends CI_TestCase {
 
 	// ------------------------------------------------------------------------
 
-	function test_delete_cookie()
+	public function test_delete_cookie()
 	{
 		/*$input_cls = $this->ci_core_class('input');
 		$this->ci_instance_var('input', new $input_cls);
@@ -53,7 +38,7 @@ class Cookie_helper_test extends CI_TestCase {
 			'my_cookie'
 		));*/
 
-		$this->markTestSkipped('Need to find a way to overcome a headers already set exception');
+		$this->markTestSkipped('Need to find a way to overcome a headers already sent exception');
 	}
 
 }
