@@ -767,11 +767,11 @@ if ( ! function_exists('set_cookie'))
 		if ($expire != 0)
 		{
 			// GMT is the most safe choice
-			$payload .=' Expires='.gmdate('D, d-M-Y H:i:s T', time() + $expire).';'
+			$payload .=' Expires='.gmdate('D, d-M-Y H:i:s T', time() + $expire)
 				// RFC6265 describes the Max-Age attribute:
 				//
 				// - Specifies the cookie lifetime in seconds
-				// - Not supported by all user agents (naturally, as it was introduced in 2011)
+				// - Not supported by all user agents
 				// - User agents that don't support it will simply ignore it
 				// - User agents that support it MUST use it instead of Expires, when present
 				//
@@ -780,9 +780,7 @@ if ( ! function_exists('set_cookie'))
 				// For the above reasons, and because some user agents might not calculate
 				// timezone differences properly (e.g. due to the system timezone setting
 				// not being correct), sending the Max-Age attribute is our safest option.
-				//
-				// The downside is - it doesn't accept negative values.
-				.($expire > 0 ? ' Max-Age='.$expire.';' : '');
+				.'; Max-Age='.(int) $expire;
 		}
 
 		$payload .= ' Path='.(empty($path) ? config_item('cookie_path') : $path).';'
@@ -857,7 +855,7 @@ if ( ! function_exists('set_cookie'))
 			{
 				header($payload, $re);
 
-				// If we didn't use header_replace(), remove the old cookie matching our
+				// If we didn't use header_remove(), remove the old cookie matching our
 				// name so it doesn't get re-sent and set the pointer to the last entry.
 				if ($re === TRUE)
 				{
